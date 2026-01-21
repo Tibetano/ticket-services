@@ -5,32 +5,27 @@ spring:
   application:
     name: ticket-services
   datasource:
-    #url:  jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
-    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/pg
+    username: postgres
+    password: postgres
   sql:
     init:
       mode: always
-  #jpa:
-  #  properties:
-  #    hibernate:
-  #      default_schema: authentication_services
-  #      format_sql: true
-    show-sql: true
-  flyway:
-    enabled: true
-    schemas: authentication_services # O schema que esta aplicação irá gerenciar
-    locations: classpath:db/migration/authentication_services # Diretório de scripts específico
-    # flyway.table=flyway_schema_history_schema1 # Opcional: Para usar uma tabela de histórico única por schema
-    table: flyway_schema_history_authentication_services
-  kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} # ✅ AQUI ESTÁ A CORREÇÃO
+
+    #jpa:
+    #hibernate:
+    #  ddl-auto: create-drop
+    #  ddl-auto: update
+    #show-sql: true
+    #defer-datasource-initialization: true
+    #properties:
+    #  hibernate:
+    #    format_sql: true
 app:
-  url: ${FRONTEND_URL}
-  port: ${FRONTEND_PORT}
-  verify-email-endpoint: ${FRONTEND_VERIFY_ENDPOINT}
-  new-password-endpoint: ${FRONTEND_NEW_PASSWORD_ENDPOINT}
+  url: http://localhost
+  port: 8085
+  verify-email-endpoint: /auth/verify-user-account
+  new-password-endpoint: /auth/new-password
 
 jwt:
   public:
@@ -47,4 +42,13 @@ topics:
   register-user: "register-user.topic.v1"
   send-email: "send-email.topic.v1"
 
-
+efi-sdk:
+  client_id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
+  client_secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
+  certificate: ./certs/homologacao-686823-ani-teste-cert-hom.p12
+  sandbox: true
+  calendario: {"expiracao": 3600}
+  devedor: {"cpf": "12345678909", "nome": "Francisco da Silva"}
+  valor: {"original": "0.01"}
+  chave: 71cdf9ba-c695-4e3c-b010-abb521a3f1be
+  solicitacaoPagador: Serviço_realizado.

@@ -1,0 +1,50 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ticket-services
+  datasource:
+    #url:  jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+  sql:
+    init:
+      mode: always
+  #jpa:
+  #  properties:
+  #    hibernate:
+  #      default_schema: authentication_services
+  #      format_sql: true
+    show-sql: true
+  flyway:
+    enabled: true
+    schemas: authentication_services # O schema que esta aplicação irá gerenciar
+    locations: classpath:db/migration/authentication_services # Diretório de scripts específico
+    # flyway.table=flyway_schema_history_schema1 # Opcional: Para usar uma tabela de histórico única por schema
+    table: flyway_schema_history_authentication_services
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} # ✅ AQUI ESTÁ A CORREÇÃO
+app:
+  url: ${FRONTEND_URL}
+  port: ${FRONTEND_PORT}
+  verify-email-endpoint: ${FRONTEND_VERIFY_ENDPOINT}
+  new-password-endpoint: ${FRONTEND_NEW_PASSWORD_ENDPOINT}
+
+jwt:
+  public:
+    key: classpath:app.pub
+  private:
+    key: classpath:app.key
+expire-times:
+  access-token: 3600           # 1 hour
+  refresh-token: 28800         # 8 hours
+  auth-validation-token: 900   # 15 minutes
+  new-password-token: 300      # 5 minutes
+
+topics:
+  register-user: "register-user.topic.v1"
+  send-email: "send-email.topic.v1"
+
+

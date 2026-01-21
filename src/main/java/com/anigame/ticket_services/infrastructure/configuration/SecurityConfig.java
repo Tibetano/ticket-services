@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST,"/u").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/u", "/v1/cob/credit-card", "/v1/cob/pix").permitAll()
                         .requestMatchers(HttpMethod.GET,"/ticket").permitAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Define a origem do CORS

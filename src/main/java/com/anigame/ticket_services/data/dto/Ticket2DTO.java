@@ -2,7 +2,7 @@ package com.anigame.ticket_services.data.dto;
 
 import java.time.LocalDate;
 
-public record TicketDTO(
+public record Ticket2DTO(
         String eventEdition,
         String ticketType,
         LocalDate date,

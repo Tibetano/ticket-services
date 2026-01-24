@@ -7,6 +7,6 @@ import java.util.List;
 public record CreditCardPaymentDTO(
     List<TicketDTO> tickets,
     @JsonProperty("credit_card_info")
-    CreditCardInfoDTO creditCardInfo
+    CreditCardDTO creditCard
 ) {
 }

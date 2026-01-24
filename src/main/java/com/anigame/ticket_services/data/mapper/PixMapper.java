@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class PixMapper {
 
     //PixQRCode -> QrcodeResDTO
-    public QrcodeResDTO toResDTO (PixQRCode pixQRCode) {
+    public static QrcodeResDTO toResDTO (PixQRCode pixQRCode) {
         return new QrcodeResDTO(
                 pixQRCode.getQrCodeImage(),
                 pixQRCode.getQrCode(),

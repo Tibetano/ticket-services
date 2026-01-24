@@ -2,7 +2,7 @@ package com.anigame.ticket_services.data.dto.creditCard;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record CustomerInfoDTO(
+public record CustomerDTO(
         String name,
         String cpf,
         String email,

@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.domain.usecase;
 
-import com.anigame.ticket_services.domain.model.PixQRCode;
+import com.anigame.ticket_services.domain.model.pix.PixQRCode;
 
 import java.net.URISyntaxException;
 

@@ -1,4 +1,4 @@
-package com.anigame.ticket_services.domain.model;
+package com.anigame.ticket_services.domain.model.pix;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

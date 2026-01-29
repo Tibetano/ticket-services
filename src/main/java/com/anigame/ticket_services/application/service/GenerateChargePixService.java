@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.application.service;
 
-import com.anigame.ticket_services.domain.model.PixQRCode;
+import com.anigame.ticket_services.domain.model.pix.PixQRCode;
 import com.anigame.ticket_services.domain.service.BaaService;
 import com.anigame.ticket_services.domain.usecase.GenerateChargePixUseCase;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 
 @Service
 @RequiredArgsConstructor
-public class GenerateCobPixService implements GenerateChargePixUseCase {
+public class GenerateChargePixService implements GenerateChargePixUseCase {
 
     private final BaaService baaService;
 

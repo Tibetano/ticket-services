@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.domain.service;
 
-import com.anigame.ticket_services.domain.model.PixQRCode;
+import com.anigame.ticket_services.domain.model.pix.PixQRCode;
 import com.anigame.ticket_services.domain.model.creditCard.CreditCardCharge;
 
 import java.net.URISyntaxException;

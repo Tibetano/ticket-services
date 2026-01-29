@@ -42,13 +42,14 @@ topics:
   register-user: "register-user.topic.v1"
   send-email: "send-email.topic.v1"
 
-efi-sdk:
-  client_id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
-  client_secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
-  certificate: ./certs/homologacao-686823-ani-teste-cert-hom.p12
+efi:
+  client-id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
+  client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
+  certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
   sandbox: true
-  calendario: {"expiracao": 3600}
-  devedor: {"cpf": "12345678909", "nome": "Francisco da Silva"}
-  valor: {"original": "0.01"}
-  chave: 71cdf9ba-c695-4e3c-b010-abb521a3f1be
-  solicitacaoPagador: Serviço_realizado.
+  original-ticket-price: "30.00"
+  pix-key: 71cdf9ba-c695-4e3c-b010-abb521a3f1be
+  qr-code-expiration-time: 3600
+
+
+

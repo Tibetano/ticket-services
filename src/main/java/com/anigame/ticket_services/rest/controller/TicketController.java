@@ -4,8 +4,10 @@ import com.anigame.ticket_services.data.dto.creditCard.CreditCardPaymentDTO;
 import com.anigame.ticket_services.data.dto.pix.CustomerPixInfoReqDTO;
 import com.anigame.ticket_services.data.dto.Ticket2DTO;
 import com.anigame.ticket_services.data.dto.TicketListDTO;
+import com.anigame.ticket_services.data.dto.ticket.TicketInfoDTO;
 import com.anigame.ticket_services.data.mapper.CreditCardMapper;
 import com.anigame.ticket_services.data.mapper.PixMapper;
+import com.anigame.ticket_services.data.mapper.TicketMapper;
 import com.anigame.ticket_services.domain.usecase.GenerateChargeCreditCardUseCase;
 import com.anigame.ticket_services.domain.usecase.GenerateChargePixUseCase;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,8 @@ public class TicketController {
 
     private final GenerateChargePixUseCase generateChargePixUseCase;
     private final GenerateChargeCreditCardUseCase generateChargeCreditCardUseCase;
+    private final PixMapper pixMapper;
+    private final TicketMapper ticketMapper;
 
     @GetMapping("/ticket")
     public ResponseEntity<?> getUserTickets () {
@@ -32,19 +36,20 @@ public class TicketController {
         return ResponseEntity.ok(userTickets);
     }
 
-    @PostMapping("/cob/pix")
+    @GetMapping("/ticket-info")
+    public ResponseEntity<?> getTicketInfo () {
+        return ResponseEntity.ok(ticketMapper.toTicketInfo());
+    }
+
+    @PostMapping("/charge/pix")
     public ResponseEntity<?> generateChargePix (@RequestBody CustomerPixInfoReqDTO customerPixInfo) throws URISyntaxException {
-        var qrCodeData = PixMapper.toResDTO(generateChargePixUseCase.execute(customerPixInfo.fullName(), customerPixInfo.cpf()));
+        var qrCodeData = pixMapper.toResDTO(generateChargePixUseCase.execute(customerPixInfo.fullName(), customerPixInfo.cpf()));
         return ResponseEntity.status(HttpStatus.OK).body(qrCodeData);
     }
 
-    @PostMapping("/cob/credit-card")
+    @PostMapping("/charge/credit-card")
     public ResponseEntity<?> generateCobCreditCard (@RequestBody CreditCardPaymentDTO creditCardPaymentDTO) {
-
         generateChargeCreditCardUseCase.execute(CreditCardMapper.CCardToDomain(creditCardPaymentDTO));
-
-        //efetuar a lógica de gerar a cobrança via cartão e retornar as informações pertinentes.
-
         return ResponseEntity.status(HttpStatus.OK).body("Purchase successful.");
     }
 }

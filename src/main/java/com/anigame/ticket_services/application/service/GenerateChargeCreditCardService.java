@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GenerateCobCreditCardService implements GenerateChargeCreditCardUseCase {
+public class GenerateChargeCreditCardService implements GenerateChargeCreditCardUseCase {
 
     private final BaaService baaService;
 
     @Override
     public void execute(CreditCardCharge creditCardCharge) {
         baaService.generateCreditCardCharge(creditCardCharge);
-        System.out.println("Chegou aqui, hein!");
     }
 }

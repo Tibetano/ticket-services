@@ -43,7 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST,"/u", "/v1/cob/credit-card", "/v1/cob/pix").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/ticket").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/v1/ticket","/v1/ticket-info").permitAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Define a origem do CORS
                 .csrf(AbstractHttpConfigurer::disable) // Desabilita CSRF se for API REST

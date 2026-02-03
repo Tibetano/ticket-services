@@ -48,7 +48,7 @@ public class TicketController {
     }
 
     @PostMapping("/charge/credit-card")
-    public ResponseEntity<?> generateCobCreditCard (@RequestBody CreditCardPaymentDTO creditCardPaymentDTO) {
+    public ResponseEntity<?> generateChargeCreditCard (@RequestBody CreditCardPaymentDTO creditCardPaymentDTO) {
         generateChargeCreditCardUseCase.execute(CreditCardMapper.CCardToDomain(creditCardPaymentDTO));
         return ResponseEntity.status(HttpStatus.OK).body("Purchase successful.");
     }

@@ -10,6 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class CreditCardCharge {
-    private List<Ticket> tickets;
+    private List<Ticket22> tickets;
     private Payment payment;
 }

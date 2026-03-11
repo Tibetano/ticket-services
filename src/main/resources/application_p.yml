@@ -20,12 +20,19 @@ spring:
     show-sql: true
   flyway:
     enabled: true
-    schemas: authentication_services # O schema que esta aplicação irá gerenciar
+    schemas: ticket_services # O schema que esta aplicação irá gerenciar
     locations: classpath:db/migration/authentication_services # Diretório de scripts específico
     # flyway.table=flyway_schema_history_schema1 # Opcional: Para usar uma tabela de histórico única por schema
     table: flyway_schema_history_authentication_services
-  kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS} # ✅ AQUI ESTÁ A CORREÇÃO
+  cloud:
+    openfeign:
+      client:
+        config:
+          EventServicesClient:
+            url: ${EVENT_SERVICES_URL}
+          AuthenticationServicesClient:
+            url: ${AUTHENTICATION_SERVICES_URL}
+
 app:
   url: ${FRONTEND_URL}
   port: ${FRONTEND_PORT}
@@ -47,4 +54,11 @@ topics:
   register-user: "register-user.topic.v1"
   send-email: "send-email.topic.v1"
 
-
+efi:
+  client-id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
+  client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
+  certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
+  sandbox: true
+  original-ticket-price: 3000 #valor em centavos OBS-IMPORTANTE: esse valor deve ser SEMPRE PAR pois se for impar o valor da meia entrada não será inteiro e dará problema de arredondamento !!!
+  pix-key: 71cdf9ba-c695-4e3c-b010-abb521a3f1be
+  qr-code-expiration-time: 3600

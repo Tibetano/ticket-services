@@ -1,7 +1,11 @@
 CREATE TYPE ticket_batch_status AS ENUM ('ACTIVE', 'FINISHED', 'HIDDEN');
-CREATE TYPE ticket_type_enum AS ENUM ('INTEIRA', 'MEIA', 'SOLIDARIO');
+CREATE TYPE ticket_type_enum AS ENUM ('FULL', 'HALF', 'SOLIDARITY');
 CREATE TYPE order_status AS ENUM ('PENDING', 'PAID', 'EXPIRED', 'CANCELED');
 CREATE TYPE ticket_status AS ENUM ('VALID', 'USED', 'CANCELED');
+
+
+CREATE TYPE payment_status AS ENUM ('PENDING', 'WAITING_PAYMENT', 'CONFIRMED', 'FAILED', 'CANCELED', 'REFUNDED');
+CREATE TYPE payment_method AS ENUM ('PIX', 'BOLETO', 'CREDIT_CARD');
 
 
 
@@ -67,7 +71,8 @@ CREATE TABLE ticket_services.orders (
     expires_at      TIMESTAMP,
     created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT chk_total_amount_positive CHECK (total_amount >= 0)
+    CONSTRAINT chk_total_amount_positive CHECK (total_amount >= 0),
+    CONSTRAINT chk_order_expiration CHECK (expires_at IS NULL OR expires_at > created_at)
 );
 
 --CREATE INDEX idx_orders_customer_id ON orders(customer_id);
@@ -106,13 +111,51 @@ CREATE TABLE ticket_services.ticket (
     checked_in_at           TIMESTAMP,
 
     CONSTRAINT fk_ticket_order_item FOREIGN KEY (order_item_id) REFERENCES ticket_services.order_item(id) ON DELETE CASCADE,
-    CONSTRAINT fk_ticket_tbt FOREIGN KEY (ticket_batch_type_id) REFERENCES ticket_services.ticket_batch_type(id)
+    CONSTRAINT fk_ticket_tbt FOREIGN KEY (ticket_batch_type_id) REFERENCES ticket_services.ticket_batch_type(id),
+
+    CONSTRAINT chk_checking_after_issue CHECK (checked_in_at IS NULL OR checked_in_at >= issued_at)
+
 );
 
 --CREATE INDEX idx_ticket_order_item_id ON ticket(order_item_id);
 --CREATE INDEX idx_ticket_tbt_id ON ticket(ticket_batch_type_id);
 --CREATE INDEX idx_ticket_status ON ticket(status);
---CREATE INDEX idx_ticket_qr_code_hash ON ticket(qr_code_hash);
 
+
+
+
+
+
+CREATE TABLE ticket_services.payment (
+    id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id                UUID NOT NULL,
+
+    provider                VARCHAR(50) NOT NULL, -- EFI_BANK
+    method                  payment_method NOT NULL,
+
+    provider_charge_id      VARCHAR(150),  -- id da cobrança
+    provider_txid           VARCHAR(150),  -- txid do PIX
+    provider_status         VARCHAR(50),   -- status original do banco
+
+    amount                  INTEGER NOT NULL,
+    status                  payment_status NOT NULL DEFAULT 'PENDING',
+
+    idempotency_key         VARCHAR(150) UNIQUE,
+    failure_reason          TEXT,
+
+    raw_response            JSONB,
+
+    expires_at              TIMESTAMP,
+    confirmed_at            TIMESTAMP,
+
+    created_at              TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMP NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES ticket_services.orders(id) ON DELETE CASCADE
+);
+
+--CREATE INDEX idx_payment_order_id ON ticket_services.payment(order_id);
+--CREATE INDEX idx_payment_provider_txid ON ticket_services.payment(provider_txid);
+--CREATE INDEX idx_payment_status ON ticket_services.payment(status);
 
 

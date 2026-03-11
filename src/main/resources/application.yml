@@ -21,6 +21,15 @@ spring:
     #properties:
     #  hibernate:
     #    format_sql: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          EventServicesClient:
+            url: http://event-services:8080
+          AuthenticationServicesClient:
+            url: http://authentication-services:8080
+
 app:
   url: http://localhost
   port: 8085
@@ -47,7 +56,7 @@ efi:
   client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
   certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
   sandbox: true
-  original-ticket-price: "30.00"
+  original-ticket-price: 3000 #valor em centavos OBS-IMPORTANTE: esse valor deve ser SEMPRE PAR pois se for impar o valor da meia entrada não será inteiro e dará problema de arredondamento !!!
   pix-key: 71cdf9ba-c695-4e3c-b010-abb521a3f1be
   qr-code-expiration-time: 3600
 

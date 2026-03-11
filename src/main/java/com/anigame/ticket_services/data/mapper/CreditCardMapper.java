@@ -1,22 +1,20 @@
 package com.anigame.ticket_services.data.mapper;
 
-import com.anigame.ticket_services.data.dto.creditCard.CreditCardDTO;
-import com.anigame.ticket_services.data.dto.creditCard.CreditCardPaymentDTO;
-import com.anigame.ticket_services.data.dto.creditCard.CustomerDTO;
-import com.anigame.ticket_services.data.dto.creditCard.TicketDTO;
-import com.anigame.ticket_services.domain.model.creditCard.*;
+import com.anigame.ticket_services.domain.model.old_model.charge.creditCard.CreditCardCharge;
+import com.anigame.ticket_services.domain.new_impl.OrderItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class CreditCardMapper {
 
+    ////CreditCardTicketPaymentDTO -> CreditCardCharge
     //CreditCardPaymentDTO -> CreditCardCharge
-    public static CreditCardCharge CCardToDomain (CreditCardPaymentDTO dto) {
-
+    /*public static CreditCardCharge CCardToDomain (CreditCardTicketPaymentDTO dto) {
         CreditCardCharge charge =  new CreditCardCharge();
-
         charge.setTickets(
                 dto.tickets().stream()
                         .map(CreditCardMapper::TicketToDomain)
@@ -25,21 +23,35 @@ public class CreditCardMapper {
         charge.setPayment(
                 new Payment(CCardInfoToDomain(dto.creditCard()))
         );
-
         return charge;
     }
 
-    public static Ticket TicketToDomain (TicketDTO dto) {
-        return new Ticket(dto.type(),0, dto.amount());
+    public static Ticket22 TicketToDomain (TicketDTO dto) {
+        return new Ticket22(
+                dto.type(),
+                0,
+                dto.amount()
+        );
     }
 
     public static CreditCard CCardInfoToDomain (CreditCardDTO dto) {
-        return new CreditCard(CustomerToDomain(dto.customer()),dto.installments(),dto.paymentToken());
+        return new CreditCard(
+                CustomerToDomain(
+                        dto.customer()
+                ),
+                dto.installments(),
+                dto.paymentToken()
+        );
     }
 
     public static Customer CustomerToDomain (CustomerDTO dto) {
-        return new Customer(dto.name(),dto.cpf(),dto.email(), dto.phoneNumber());
-    }
+        return new Customer(
+                dto.name(),
+                dto.cpf(),
+                dto.email(),
+                dto.phoneNumber()
+        );
+    }*/
 
     public JSONObject toRequestBody (CreditCardCharge charge) {
 
@@ -124,4 +136,49 @@ public class CreditCardMapper {
         return tickets;
     }
 
+    public JSONObject generateRequestBody (String customerName, String customerCPF, String customerPhoneNumber,
+                                           String customerEmail, Integer installments, String paymentToken, List<OrderItem> items
+    ) {
+
+        //customer
+        JSONObject customerJson = new JSONObject();
+        customerJson.put("name", customerName);
+        customerJson.put("cpf", customerCPF);
+        customerJson.put("phone_number", customerPhoneNumber);
+        customerJson.put("email", customerEmail);
+
+        //notification URL
+        JSONObject metadata = new JSONObject();
+        metadata.put("notification_url", "https://requestb.in/16rpx6y1");
+        metadata.put("custom_id", "id_0007");
+
+        JSONObject creditCard = new JSONObject();
+        creditCard.put("installments", installments);
+        creditCard.put("payment_token", paymentToken);
+        creditCard.put("customer", customerJson);
+
+        JSONObject payment = new JSONObject();
+        payment.put("credit_card", creditCard);
+
+        JSONObject body = new JSONObject();
+        body.put("payment", payment);
+        body.put("items", buildItemList(items));
+        body.put("metadata", metadata);
+
+        return body;
+    }
+
+    private JSONArray buildItemList(List<OrderItem> items) {
+        JSONArray tickets = new JSONArray();
+        items.forEach(t -> {
+            if (t.getQuantity() > 0) {
+                JSONObject ticket = new JSONObject();
+                ticket.put("name", t.getType());
+                ticket.put("amount", t.getQuantity());
+                ticket.put("value", t.getUnitPrice());
+                tickets.put(ticket);
+            }
+        });
+        return tickets;
+    }
 }

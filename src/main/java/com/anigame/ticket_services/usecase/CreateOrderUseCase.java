@@ -1,14 +1,14 @@
 package com.anigame.ticket_services.usecase;
 
-import com.anigame.ticket_services.data.dto.OrderRequestDTO;
-import com.anigame.ticket_services.data.dto.OrderResponseDTO;
-import com.anigame.ticket_services.z_domain.OrderEntity;
-import com.anigame.ticket_services.z_domain.OrderItemEntity;
-import com.anigame.ticket_services.z_domain.TicketBatchEntity;
-import com.anigame.ticket_services.domain.new_impl.Customer;
-import com.anigame.ticket_services.domain.new_impl.PaymentProcessor;
-import com.anigame.ticket_services.domain.persistence.OrderRepository;
-import com.anigame.ticket_services.domain.persistence.TicketBatchRepository;
+import com.anigame.ticket_services.web.dto.request.OrderRequestDTO;
+import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
+import com.anigame.ticket_services.domain.Customer;
+import com.anigame.ticket_services.usecase.payment.PaymentProcessor;
+import com.anigame.ticket_services.repository.order.OrderRepository;
+import com.anigame.ticket_services.repository.ticket_batch.TicketBatchRepository;
+import com.anigame.ticket_services.domain.OrderEntity;
+import com.anigame.ticket_services.domain.OrderItemEntity;
+import com.anigame.ticket_services.domain.TicketBatchEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

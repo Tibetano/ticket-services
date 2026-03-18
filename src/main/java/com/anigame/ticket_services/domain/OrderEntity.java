@@ -39,12 +39,13 @@ public class OrderEntity {
     private LocalDateTime createdAt;
 
 
+    @Builder.Default
     @OneToMany(
             mappedBy = "orderEntity",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<OrderItemEntity> items;
+    private List<OrderItemEntity> items = new ArrayList<>();
 
 
     public static OrderEntity createWithOrderItemList (UUID customerId,

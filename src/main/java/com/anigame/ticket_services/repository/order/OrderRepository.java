@@ -14,9 +14,12 @@ public class OrderRepository {
 
     private final SpringDataOrderRepository jpaRepo;
 
-    public List<OrderEntity> findExpiredPendingOrders (){
-        return jpaRepo.findByStatusAndExpiresAtBefore(OrderStatusEntity.PENDING, LocalDateTime.now());
-    };
+    public List<OrderEntity> findExpiredPendingOrders(int limit) {
+        return jpaRepo.findExpiredPendingOrdersForUpdate(
+                OrderStatusEntity.PENDING.name(),
+                limit
+        );
+    }
 
     public OrderEntity save(OrderEntity order) {
         return jpaRepo.save(order);

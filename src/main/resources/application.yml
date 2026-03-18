@@ -12,7 +12,8 @@ spring:
     init:
       mode: always
 
-    #jpa:
+    jpa:
+      open-in-view: false #Evita queries fora da transação.
     #hibernate:
     #  ddl-auto: create-drop
     #  ddl-auto: update

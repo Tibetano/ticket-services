@@ -3,11 +3,28 @@ package com.anigame.ticket_services.repository.order;
 import com.anigame.ticket_services.domain.OrderEntity;
 import com.anigame.ticket_services.domain.OrderStatusEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public interface SpringDataOrderRepository extends JpaRepository<OrderEntity, UUID> {
-    List<OrderEntity> findByStatusAndExpiresAtBefore(OrderStatusEntity status, LocalDateTime now);
+    //código abaixo tem objetivo de fazer o look e busca de três orders por vez evitando que outra app tente processar os mesmos pedidos
+    @Query(
+            value = """
+    SELECT *
+    FROM ticket_services.orders
+    WHERE status = CAST(:status AS order_status)
+    AND expires_at < now()
+    LIMIT :limit
+    FOR UPDATE SKIP LOCKED
+    """,
+            nativeQuery = true
+    )
+    List<OrderEntity> findExpiredPendingOrdersForUpdate(
+            @Param("status") String status,
+            @Param("limit") int limit
+    );
 }

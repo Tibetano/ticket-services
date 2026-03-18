@@ -12,7 +12,8 @@ spring:
   sql:
     init:
       mode: always
-  #jpa:
+  jpa:
+    open-in-view: false #Evita queries fora da transação.
   #  properties:
   #    hibernate:
   #      default_schema: authentication_services

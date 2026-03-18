@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.usecase;
 
-import com.anigame.ticket_services.domain.TicketBatchTypeEntity;
+import com.anigame.ticket_services.domain.OrderEntity;
 import com.anigame.ticket_services.repository.order.OrderRepository;
 import com.anigame.ticket_services.repository.ticket_batch_type.TicketBatchTypeRepository;
 import jakarta.transaction.Transactional;
@@ -18,32 +18,34 @@ public class ExpireOrdersUseCase {
 
     @Transactional
     public void execute() {
-        var expiredOrders = orderRepository.findExpiredPendingOrders();
 
+        var expiredOrders = orderRepository.findExpiredPendingOrders(100);
+        processOrders(expiredOrders);
+    }
+
+    private void processOrders(List<OrderEntity> orders) {
+
+        Map<UUID, Integer> ticketQuantityList = new HashMap<>();
         Set<UUID> ticketBatchTypeIds = new HashSet<>();
 
-        //mapa que vai conter o par (ticketbatchtypeId, quantidade total a ser liberada nesse lote)
-        Map<UUID, Integer> ticketQuantityList = new HashMap<>();
-
-        for (var order : expiredOrders) {
+        for (var order : orders) {
             for (var item : order.getItems()) {
-                if (!ticketQuantityList.containsKey(item.getTicketBatchTypeId())){
-                    ticketQuantityList.put(item.getTicketBatchTypeId(), item.getQuantity());
-                    ticketBatchTypeIds.add(item.getTicketBatchTypeId());
-                } else {
-                    ticketQuantityList.compute(item.getTicketBatchTypeId(), (k, v) -> v + item.getQuantity());
-                }
+                ticketQuantityList.merge(
+                        item.getTicketBatchTypeId(),
+                        item.getQuantity(),
+                        Integer::sum
+                );
+                ticketBatchTypeIds.add(item.getTicketBatchTypeId());
             }
-            //order.expire();
             order.expire();
         }
 
-        List<TicketBatchTypeEntity> ticketBatchTypes = stockRepository.findByIdIn(ticketBatchTypeIds);
+        var ticketBatchTypes = stockRepository.findByIdIn(ticketBatchTypeIds);
 
-        for(var t : ticketBatchTypes) {
-                t.releaseTickets(ticketQuantityList.get(t.getId()));
+        for (var t : ticketBatchTypes) {
+            t.releaseTickets(ticketQuantityList.get(t.getId()));
         }
-
     }
+
 
 }

@@ -70,8 +70,12 @@ public class OrderEntity {
                 return order;
     }
 
-    public void markAsPaid() {
+    public void paid() {
         this.status = OrderStatusEntity.PAID;
+    }
+
+    public void expire() {
+        this.status = OrderStatusEntity.EXPIRED;
     }
 
     public void cancel() {

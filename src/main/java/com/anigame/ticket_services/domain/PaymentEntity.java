@@ -122,7 +122,7 @@ public class PaymentEntity {
                 .build();
     }
 
-    /*public void markAsPaid() {
+    /*public void paid() {
         this.status = PaymentStatus.APPROVED;
         this.paidAt = OffsetDateTime.now();
     }*/

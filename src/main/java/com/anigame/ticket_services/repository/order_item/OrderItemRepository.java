@@ -2,11 +2,11 @@ package com.anigame.ticket_services.repository.order_item;
 
 import com.anigame.ticket_services.domain.OrderItemEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class OrderItemRepository {
 

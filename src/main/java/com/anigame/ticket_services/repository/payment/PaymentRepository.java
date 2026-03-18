@@ -2,9 +2,9 @@ package com.anigame.ticket_services.repository.payment;
 
 import com.anigame.ticket_services.domain.PaymentEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class PaymentRepository {
 

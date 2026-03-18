@@ -12,8 +12,8 @@ public class WebhookService {
         /*Payment payment = paymentRepository.findByTransactionId(dto.id());
 
         if (dto.isPaid()) {
-            payment.markAsPaid();
-            payment.getOrder().markAsPaid();
+            payment.paid();
+            payment.getOrder().paid();
         }*/
     }
 

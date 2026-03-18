@@ -49,7 +49,7 @@ public class TicketBatchEntity {
         tickets.forEach(ticket -> {//avaliar mudar os tipos dos atributos para um map para eveitar esses for's aninhados
             ticketBatchType.forEach(tEntity -> {
                 if (ticket.type().equals(tEntity.getTicketType().name())) {
-                    tEntity.reserve(ticket.quantity());
+                    tEntity.reserveTickets(ticket.quantity());
                 }
             });
         });

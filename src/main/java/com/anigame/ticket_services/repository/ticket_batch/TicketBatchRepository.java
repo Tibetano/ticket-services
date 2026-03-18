@@ -2,12 +2,12 @@ package com.anigame.ticket_services.repository.ticket_batch;
 
 import com.anigame.ticket_services.domain.TicketBatchEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
+@Repository
 @RequiredArgsConstructor
 public class TicketBatchRepository {
 

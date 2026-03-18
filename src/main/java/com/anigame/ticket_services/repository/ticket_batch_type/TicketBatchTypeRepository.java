@@ -1,11 +1,18 @@
 package com.anigame.ticket_services.repository.ticket_batch_type;
 
+import com.anigame.ticket_services.domain.TicketBatchTypeEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+@Repository
 @RequiredArgsConstructor
 public class TicketBatchTypeRepository {
+
+    private  final SpringDataTicketBatchTypeRepository jpaRepo;
 /*
     @PersistenceContext
     EntityManager entityManager;
@@ -51,4 +58,26 @@ public class TicketBatchTypeRepository {
             return Optional.empty();
         }
     }*/
+
+
+/*
+    public void releaseReservation (List<OrderItemEntity> items) {
+        List<UUID> ticketBatchTypeIds = items.stream().map(OrderItemEntity::getId).toList();
+        Map<UUID,Integer> ticketQuantity = items.stream().collect(Collectors.toMap(
+                OrderItemEntity::getTicketBatchTypeId,
+                OrderItemEntity::getQuantity
+        ));
+
+        List<TicketBatchTypeEntity> ticketBatchTypes = jpaRepo.findByIdIn(ticketBatchTypeIds);
+
+        //percorrer os lotes e pegando os valores nos items
+        for(var t : ticketBatchTypes) {
+            t.releaseTickets(ticketQuantity.get(t.getId()));
+        }
+
+    }*/
+    public List<TicketBatchTypeEntity> findByIdIn (Set<UUID> ids) {
+        return jpaRepo.findByIdIn(ids.stream().toList());
+    }
+
 }

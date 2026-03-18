@@ -47,12 +47,20 @@ public class TicketBatchTypeEntity {
     @ToString.Exclude
     private TicketBatchEntity ticketBatchEntity;
 
-    public void reserve (Integer ticketQuantity) {
+    public void reserveTickets(Integer ticketQuantity) {
         if (soldQuantity + reservedQuantity + ticketQuantity > totalQuantity) {
             throw new RuntimeException("The number of available " + ticketType.name() + " tickets is: " +
                     (totalQuantity-(soldQuantity+reservedQuantity)));
         }
         reservedQuantity+=ticketQuantity;
+    }
+
+    public void releaseTickets(Integer ticketQuantity) {
+        if (reservedQuantity < ticketQuantity) {
+            throw new RuntimeException("The number of tickets reserved (" + reservedQuantity +
+                    ") is less than the number stated (" + ticketQuantity + ")!");
+        }
+        reservedQuantity -= ticketQuantity;
     }
 
 }

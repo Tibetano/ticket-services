@@ -1,11 +1,10 @@
 package com.anigame.ticket_services.repository.order;
 
 import com.anigame.ticket_services.domain.OrderEntity;
-import com.anigame.ticket_services.domain.OrderStatusEntity;
+import com.anigame.ticket_services.domain.enums.OrderStatusEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository

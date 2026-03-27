@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.domain;
 
-import com.anigame.ticket_services.repository.ticket.TicketStatusEntity;
+import com.anigame.ticket_services.domain.enums.TicketStatusEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,10 +22,12 @@ public class TicketEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", updatable = false, nullable = false)
     private UUID id;
+
     @Column(name = "order_item_id", nullable = false)
     private UUID orderItemId;
     @Column(name = "ticket_batch_type_id", nullable = false)
     private UUID ticketBatchTypeId;
+
     @Column(name = "owner_name", length = 150)
     private String ownerName;
     @Column(name = "qr_code_hash", nullable = false, unique = true)
@@ -38,8 +40,4 @@ public class TicketEntity {
     @Column(name = "checked_in_at")
     private LocalDateTime checkedInAt;
 
-    @PrePersist
-    void onCreate() {
-        issuedAt = LocalDateTime.now();
-    }
 }

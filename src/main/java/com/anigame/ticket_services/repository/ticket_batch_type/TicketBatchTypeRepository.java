@@ -80,4 +80,8 @@ public class TicketBatchTypeRepository {
         return jpaRepo.findByIdIn(ids.stream().toList());
     }
 
+    public void updateStockByOrder(UUID orderId) {
+        jpaRepo.updateStockByOrder(orderId);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.anigame.ticket_services.domain;
 
+import com.anigame.ticket_services.domain.enums.OrderStatusEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;

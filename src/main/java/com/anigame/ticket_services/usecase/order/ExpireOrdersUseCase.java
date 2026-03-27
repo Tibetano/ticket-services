@@ -1,4 +1,4 @@
-package com.anigame.ticket_services.usecase;
+package com.anigame.ticket_services.usecase.order;
 
 import com.anigame.ticket_services.domain.OrderEntity;
 import com.anigame.ticket_services.repository.order.OrderRepository;

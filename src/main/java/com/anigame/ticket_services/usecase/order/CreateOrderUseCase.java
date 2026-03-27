@@ -1,4 +1,4 @@
-package com.anigame.ticket_services.usecase;
+package com.anigame.ticket_services.usecase.order;
 
 import com.anigame.ticket_services.web.dto.request.OrderRequestDTO;
 import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
@@ -44,8 +44,7 @@ public class CreateOrderUseCase {
 
 
         //busca o lote que deverá puxar os tipos de ingresso(modelar o relacionamento nas entidades). Se não encontrar retorna Lote inválido.
-        TicketBatchEntity ticketBatch = ticketBatchRepository.findById(dto.batch().id())
-                .orElseThrow(() -> new RuntimeException("Ticket batch not found."));
+        TicketBatchEntity ticketBatch = ticketBatchRepository.findById(dto.batch().id());
 
         //aqui deve reservar os ingressos. implementar o método de reservar
         ticketBatch.reserveTickets(dto.tickets());

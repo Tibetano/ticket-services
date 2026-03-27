@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.web.controller;
 
-import com.anigame.ticket_services.usecase.CreateOrderUseCase;
+import com.anigame.ticket_services.usecase.order.CreateOrderUseCase;
 import com.anigame.ticket_services.web.dto.request.OrderRequestDTO;
 import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
 import jakarta.validation.Valid;

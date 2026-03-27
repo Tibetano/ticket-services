@@ -2,6 +2,7 @@ package com.anigame.ticket_services.repository.ticket_batch;
 
 import com.anigame.ticket_services.domain.TicketBatchEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +10,15 @@ import java.util.UUID;
 public interface SpringDataTicketBatchRepository extends JpaRepository<TicketBatchEntity, UUID> {
 
     Optional<TicketBatchEntity> findById(UUID id); // normal
+
+    @Query("""
+    SELECT b FROM TicketBatchEntity b
+    WHERE b.startAt <= CURRENT_TIMESTAMP
+      AND b.endAt >= CURRENT_TIMESTAMP
+    """)
+    Optional<TicketBatchEntity> findActiveBatch();
+
+
 
     //@EntityGraph(attributePaths = "ticketBatchType")
     //Optional<TicketBatchEntity> findByIdWithTypes(UUID id); // quando precisa

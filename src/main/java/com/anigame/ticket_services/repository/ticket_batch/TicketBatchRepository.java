@@ -13,8 +13,13 @@ public class TicketBatchRepository {
 
     private final SpringDataTicketBatchRepository jpaRepo;
 
-    public Optional<TicketBatchEntity> findById(UUID id) {
-        return jpaRepo.findById(id);
+    public TicketBatchEntity findById(UUID id) {
+
+        return jpaRepo.findById(id).orElseThrow(()->new RuntimeException("Ticket batch not found."));
+    }
+
+    public TicketBatchEntity findActiveBatch() {
+        return jpaRepo.findActiveBatch().orElseThrow(() -> new RuntimeException("Corrent active ticket batch not found."));
     }
 
     public UUID save(TicketBatchEntity ticketBatchEntity) {

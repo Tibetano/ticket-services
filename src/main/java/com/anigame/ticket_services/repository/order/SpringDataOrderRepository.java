@@ -1,12 +1,10 @@
 package com.anigame.ticket_services.repository.order;
 
 import com.anigame.ticket_services.domain.OrderEntity;
-import com.anigame.ticket_services.domain.OrderStatusEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 

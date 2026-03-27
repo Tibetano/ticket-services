@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.web.dto.response;
 
-import com.anigame.ticket_services.domain.OrderStatusEntity;
+import com.anigame.ticket_services.domain.enums.OrderStatusEntity;
 import lombok.Builder;
 
 import java.util.UUID;

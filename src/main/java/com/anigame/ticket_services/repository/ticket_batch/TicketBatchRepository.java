@@ -1,6 +1,7 @@
 package com.anigame.ticket_services.repository.ticket_batch;
 
 import com.anigame.ticket_services.domain.TicketBatchEntity;
+import com.anigame.ticket_services.shared.exception.exceptions.NotAvailableBatchException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -32,7 +33,7 @@ public class TicketBatchRepository {
     }
 
     public TicketBatchEntity findActiveBatch() {
-        return jpaRepo.findActiveBatch().orElseThrow(() -> new RuntimeException("Corrent active ticket batch not found."));
+        return jpaRepo.findActiveBatch().orElseThrow(() -> new NotAvailableBatchException("Corrent active ticket batch not found."));
     }
 
     public UUID save(TicketBatchEntity ticketBatchEntity) {

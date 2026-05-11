@@ -13,6 +13,7 @@ public record PixPaymentResponse(
 
     @Override
     public PaymentMethodEnumEntity method() {
+
         return PaymentMethodEnumEntity.PIX;
     }
 }

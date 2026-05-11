@@ -16,6 +16,11 @@ public class EfiProperties {
     private boolean sandbox;
     private String pixKey;
 
+    private Long creditCardFee;
+    private Long pixFee;
+
+    private String chargeNotificationUrl;
+
     private String originalTicketPrice;
     private Integer QRCodeExpirationTime;
 }

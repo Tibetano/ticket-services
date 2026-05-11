@@ -1,4 +1,4 @@
-package com.anigame.ticket_services.domain.enums;
+package com.anigame.ticket_services.domain.order;
 
 public enum OrderStatusEntity {
     PENDING,

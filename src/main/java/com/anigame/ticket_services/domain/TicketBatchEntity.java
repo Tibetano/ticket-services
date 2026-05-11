@@ -38,6 +38,7 @@ public class TicketBatchEntity {
 
     @OneToMany(
             mappedBy = "ticketBatchEntity",
+            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
@@ -45,10 +46,10 @@ public class TicketBatchEntity {
 
     public void reserveTickets (List<TicketRequestDTO> tickets) {
 
-
         tickets.forEach(ticket -> {//avaliar mudar os tipos dos atributos para um map para eveitar esses for's aninhados
             ticketBatchType.forEach(tEntity -> {
-                if (ticket.type().equals(tEntity.getTicketType().name())) {
+                if (ticket.type().equals(tEntity.getTicketType().name()) &&
+                        ticket.quantity() > 0) {
                     tEntity.reserveTickets(ticket.quantity());
                 }
             });

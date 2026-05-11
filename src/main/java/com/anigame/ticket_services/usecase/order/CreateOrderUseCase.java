@@ -1,71 +1,64 @@
 package com.anigame.ticket_services.usecase.order;
 
-import com.anigame.ticket_services.web.dto.request.OrderRequestDTO;
-import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
 import com.anigame.ticket_services.domain.Customer;
-import com.anigame.ticket_services.usecase.payment.PaymentProcessor;
-import com.anigame.ticket_services.repository.order.OrderRepository;
-import com.anigame.ticket_services.repository.ticket_batch.TicketBatchRepository;
-import com.anigame.ticket_services.domain.OrderEntity;
 import com.anigame.ticket_services.domain.OrderItemEntity;
 import com.anigame.ticket_services.domain.TicketBatchEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
+import com.anigame.ticket_services.domain.order.OrderVerify;
+import com.anigame.ticket_services.infrastructure.clients.UserAccountService;
+import com.anigame.ticket_services.repository.order.OrderRepository;
+import com.anigame.ticket_services.repository.ticket_batch.TicketBatchRepository;
+import com.anigame.ticket_services.usecase.payment.PaymentProcessor;
+import com.anigame.ticket_services.web.dto.request.OrderRequestDTO;
+import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CreateOrderUseCase {
 
+    private final UserAccountService userAccountService;
     private final PaymentProcessor paymentProcessor;
     private final OrderRepository orderRepository;
     private final TicketBatchRepository ticketBatchRepository;
+    private final OrderVerify orderVerify;
 
     @Transactional
-    public OrderResponseDTO execute(String authorizationHeader, OrderRequestDTO dto) {
-
-        // valida lote
-        // reserva ingressos
-        // calcula valor real (NUNCA usa valor do client)
+    public OrderResponseDTO execute(String authorizationToken, OrderRequestDTO dto) {
 
         //obter os dados id, nome e cpf para a criação do pedido e cobrança.
-        //UserProfile userProfile = userAccountService.getVerifiedUser(authorizationToken);//esses nomes não estão semânticos
-        //Customer customer = userAccountService.getVerifiedUser(authorizationToken);//utilizar essa assinatura
-        var customer = Customer.builder()
-               .id(UUID.randomUUID())
-                .fullName("Lucas Maciel")
-                .cpf("10212365606")
-                .phoneNumber("3891452712")
-                .email("lucas@email.com")
-                .build();
+        Customer customer = userAccountService.getVerifiedUser(authorizationToken);
 
+        orderVerify.verifyTicketDisponibility(customer.getId(), dto);
 
-        //busca o lote que deverá puxar os tipos de ingresso(modelar o relacionamento nas entidades). Se não encontrar retorna Lote inválido.
+        // valida lote
+        // busca o lote que deverá puxar os tipos de ingresso(modelar o relacionamento nas entidades). Se não encontrar retorna Lote inválido.
         TicketBatchEntity ticketBatch = ticketBatchRepository.findById(dto.batch().id());
 
-        //aqui deve reservar os ingressos. implementar o método de reservar
+        // reserva ingressos
         ticketBatch.reserveTickets(dto.tickets());
 
-        //criar lista de intens pedido
+        // criar lista de intens pedido
         List<OrderItemEntity> orderItemList = OrderItemEntity.createOrderItemList(
                 ticketBatch.getTicketBatchType(),
                 dto.tickets()
         );
 
-        //cria o pedido
+        // calcula valor real (NUNCA usa valor do client)
+        // cria o pedido
         OrderEntity order = OrderEntity.createWithOrderItemList(
                 customer.getId(),
                 10L,
                 orderItemList
         );
 
-        //salva o pedido e pega o id.
+        // salva o pedido para pegar o numero do pedido.
         var savedOrder = orderRepository.save(order);
 
         return paymentProcessor.process(customer, savedOrder, dto.payment());
-
     }
 }

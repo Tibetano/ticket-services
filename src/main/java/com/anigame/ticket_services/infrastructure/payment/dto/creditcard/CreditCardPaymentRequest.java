@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.infrastructure.payment.dto.creditcard;
 
-import com.anigame.ticket_services.infrastructure.payment.dto.*;
+import com.anigame.ticket_services.infrastructure.payment.dto.OrderItem;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ public record CreditCardPaymentRequest(
             String customerEmail,
             Integer installments,
             String paymentToken,
+            String notificationUrl,
             List<OrderItem> orderItems
     ) {
 
@@ -27,9 +28,19 @@ public record CreditCardPaymentRequest(
                 customerEmail
         );
 
+        BillingAddress billingAddress = new BillingAddress(
+                "Rua Exemplo",
+                "123",
+                "Centro",
+                "39400000",
+                "Janaúba",
+                "MG"
+        );
+
         CreditCard creditCard = new CreditCard(
                 installments,
                 paymentToken,
+                billingAddress,
                 customer
         );
 
@@ -45,8 +56,8 @@ public record CreditCardPaymentRequest(
                 .toList();
 
         Metadata metadata = new Metadata(
-                "https://requestb.in/16rpx6y1",
-                "id_0007"
+                notificationUrl,
+                null//"id_0007"
         );
 
         return new CreditCardPaymentRequest(payment, items, metadata);

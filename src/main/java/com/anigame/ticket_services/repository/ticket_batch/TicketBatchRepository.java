@@ -4,7 +4,7 @@ import com.anigame.ticket_services.domain.TicketBatchEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Repository
@@ -15,7 +15,20 @@ public class TicketBatchRepository {
 
     public TicketBatchEntity findById(UUID id) {
 
-        return jpaRepo.findById(id).orElseThrow(()->new RuntimeException("Ticket batch not found."));
+        TicketBatchEntity currentBatch = jpaRepo.findById(id).orElseThrow(()->new RuntimeException("Ticket batch not found."));
+
+
+        /*
+        ANALISAR ONDE DEVE FICAR A LÓGICA DE VERIFICAÇÃO DE LOTE ATIVO EXECUTADA ABAIXO POIS ELA NÃO DEVE ESTAR AQUI DENTRO DO REPOSITORY.
+        */
+
+        if (currentBatch.getStartAt().isAfter(LocalDateTime.now())) {
+            throw new RuntimeException("Batch is not started.");
+        } else if (currentBatch.getEndAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Batch ended.");
+        }
+
+        return currentBatch;
     }
 
     public TicketBatchEntity findActiveBatch() {

@@ -3,15 +3,18 @@ package com.anigame.ticket_services.usecase.payment.strategy;
 import com.anigame.ticket_services.domain.Customer;
 import com.anigame.ticket_services.domain.PaymentEntity;
 import com.anigame.ticket_services.domain.enums.PaymentMethodEnumEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
 import com.anigame.ticket_services.infrastructure.payment.PaymentGateway;
-import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
-import com.anigame.ticket_services.web.dto.request.PaymentRequestDTO;
-import com.anigame.ticket_services.web.dto.response.PixPaymentResponse;
-import com.anigame.ticket_services.web.dto.response.PixPaymentDetailsResponse;
 import com.anigame.ticket_services.repository.payment.PaymentRepository;
-import com.anigame.ticket_services.domain.OrderEntity;
+import com.anigame.ticket_services.web.dto.request.PaymentRequestDTO;
+import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
+import com.anigame.ticket_services.web.dto.response.PixPaymentDetailsResponse;
+import com.anigame.ticket_services.web.dto.response.PixPaymentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,8 @@ public class PixPaymentStrategy implements PaymentStrategy {
 
     private final PaymentGateway gateway;
     private final PaymentRepository paymentRepository;
+    @Value("${efi.pix-fee-value}")
+    private BigDecimal pixFeeValue;
 
     @Override
     public PaymentMethodEnumEntity method() {
@@ -27,6 +32,9 @@ public class PixPaymentStrategy implements PaymentStrategy {
 
     @Override
     public OrderResponseDTO process(Customer customer, OrderEntity order, PaymentRequestDTO payment) {
+
+        //aplica a taxa do serviço do efí ao valor do pedido
+        order.applyPercentageFee(pixFeeValue);
 
         var response = gateway.generatePix(customer, order);
 
@@ -51,9 +59,16 @@ public class PixPaymentStrategy implements PaymentStrategy {
                 .build();
 
         return OrderResponseDTO.builder()
-                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
                 .status(order.getStatus())
                 .payment(paymentResponse)
                 .build();
     }
+
+
+
+
+
+
+
 }

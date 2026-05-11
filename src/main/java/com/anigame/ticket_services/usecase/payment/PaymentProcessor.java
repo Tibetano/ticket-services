@@ -2,10 +2,10 @@ package com.anigame.ticket_services.usecase.payment;
 
 import com.anigame.ticket_services.domain.Customer;
 import com.anigame.ticket_services.domain.enums.PaymentMethodEnumEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
 import com.anigame.ticket_services.usecase.payment.strategy.PaymentStrategy;
-import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
 import com.anigame.ticket_services.web.dto.request.PaymentRequestDTO;
-import com.anigame.ticket_services.domain.OrderEntity;
+import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

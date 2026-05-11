@@ -1,11 +1,14 @@
-package com.anigame.ticket_services.domain;
+package com.anigame.ticket_services.domain.order;
 
-import com.anigame.ticket_services.domain.enums.OrderStatusEntity;
+import com.anigame.ticket_services.domain.OrderItemEntity;
+import com.anigame.ticket_services.domain.PaymentEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,8 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", updatable = false, nullable = false)
     private UUID id;
+    @Column(name = "order_number", insertable = false, updatable = false)//ESSE ATRIBUTO NÃO PODE SER SETADO OU ATUALIZADO
+    private Long orderNumber;//ESSE ATRIBUTO NÃO PODE SER SETADO OU ATUALIZADO
     @Column(name = "customer_id", nullable = false)
     private UUID customerId;
     @Enumerated(EnumType.STRING)
@@ -38,6 +43,9 @@ public class OrderEntity {
     private LocalDateTime expiresAt;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @OneToOne(mappedBy = "orderEntity")
+    private PaymentEntity paymentEntity;
 
 
     @Builder.Default
@@ -74,6 +82,9 @@ public class OrderEntity {
 
     public void paid() {
         this.status = OrderStatusEntity.PAID;
+        //chama o método "dar baixa" dos order entity que chamam o método confirm reserved tickets da entidade ticketbatchtypeentity
+        this.items.forEach(OrderItemEntity::confirmReservedTickets);
+
     }
 
     public void expire() {
@@ -87,6 +98,18 @@ public class OrderEntity {
     public void addItem (OrderItemEntity item) {
         item.setOrderEntity(this);
         this.items.add(item);
+    }
+
+    public void applyPercentageFee(BigDecimal percentage) {
+
+        BigDecimal fee = BigDecimal.valueOf(this.totalAmount)
+                .multiply(percentage)
+                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
+
+        this.totalAmount = BigDecimal.valueOf(this.totalAmount)
+                .add(fee)
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
     }
 
 }

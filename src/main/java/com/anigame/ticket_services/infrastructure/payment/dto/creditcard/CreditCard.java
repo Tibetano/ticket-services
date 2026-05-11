@@ -8,5 +8,8 @@ public record CreditCard(
         @JsonProperty("payment_token")
         String paymentToken,
 
+        @JsonProperty("billing_address")
+        BillingAddress billingAddress,
+
         Customer customer
 ) {}

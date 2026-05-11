@@ -1,6 +1,6 @@
 package com.anigame.ticket_services.usecase.order;
 
-import com.anigame.ticket_services.domain.OrderEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
 import com.anigame.ticket_services.repository.order.OrderRepository;
 import com.anigame.ticket_services.repository.ticket_batch_type.TicketBatchTypeRepository;
 import jakarta.transaction.Transactional;
@@ -31,11 +31,11 @@ public class ExpireOrdersUseCase {
         for (var order : orders) {
             for (var item : order.getItems()) {
                 ticketQuantityList.merge(
-                        item.getTicketBatchTypeId(),
+                        item.getTicketBatchTypeEntity().getId(),
                         item.getQuantity(),
                         Integer::sum
                 );
-                ticketBatchTypeIds.add(item.getTicketBatchTypeId());
+                ticketBatchTypeIds.add(item.getTicketBatchTypeEntity().getId());
             }
             order.expire();
         }
@@ -43,7 +43,7 @@ public class ExpireOrdersUseCase {
         var ticketBatchTypes = stockRepository.findByIdIn(ticketBatchTypeIds);
 
         for (var t : ticketBatchTypes) {
-            t.releaseTickets(ticketQuantityList.get(t.getId()));
+            t.releaseReservedTickets(ticketQuantityList.get(t.getId()));
         }
     }
 

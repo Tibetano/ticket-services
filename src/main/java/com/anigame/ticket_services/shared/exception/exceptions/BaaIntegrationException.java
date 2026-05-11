@@ -1,4 +1,4 @@
-package com.anigame.ticket_services.shared.exception;
+package com.anigame.ticket_services.shared.exception.exceptions;
 
 public class BaaIntegrationException extends RuntimeException {
 

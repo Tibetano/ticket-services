@@ -72,7 +72,7 @@ public class TicketBatchTypeRepository {
 
         //percorrer os lotes e pegando os valores nos items
         for(var t : ticketBatchTypes) {
-            t.releaseTickets(ticketQuantity.get(t.getId()));
+            t.releaseReservedTickets(ticketQuantity.get(t.getId()));
         }
 
     }*/

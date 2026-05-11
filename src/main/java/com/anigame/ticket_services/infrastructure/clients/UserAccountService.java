@@ -1,8 +1,10 @@
 package com.anigame.ticket_services.infrastructure.clients;
 
+import com.anigame.ticket_services.domain.Customer;
+import com.anigame.ticket_services.infrastructure.clients.dto.AccountInfoDTO;
+import com.anigame.ticket_services.infrastructure.clients.dto.UserAccountStatus;
+import com.anigame.ticket_services.infrastructure.clients.dto.UserProfileDTO;
 import com.anigame.ticket_services.infrastructure.security.TokenService;
-import com.anigame.ticket_services.web.dto.AccountStatusDTO;
-import com.anigame.ticket_services.infrastructure.clients.dto.UserProfile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,21 +16,26 @@ public class UserAccountService {
     private final EventServicesFeignClient eventServicesFeignClient;
     private final TokenService tokenService;
 
-    public UserProfile getVerifiedUser(String authorizationToken) {
+    public Customer getVerifiedUser(String authorizationToken) {
 
-        AccountStatusDTO accountStatus = authServicesFeignClient.getAccountInfo(authorizationToken);
+        AccountInfoDTO accountInfo = authServicesFeignClient.getAccountInfo(authorizationToken);
 
-        if (!accountStatus.isVerified()) {
-            throw new RuntimeException("ACCOUNT NOT VERIFIED!!!!!!!!!!!!!!");
+        if (!accountInfo.status().equals(UserAccountStatus.VERIFIED)) {
+            throw new RuntimeException("ACCOUNT NOT VERIFIED!");
         }
 
-        //UserProfileDTO userProfile = eventServicesFeignClient.
+        UserProfileDTO userProfile = eventServicesFeignClient.getUserProfile(authorizationToken);
 
-        //var userId = tokenService.getUserIdFromToken(authorizationToken.replace("Bearer ",""));
+        var userId = tokenService.getUserIdFromToken(authorizationToken.replace("Bearer ",""));
 
         //AQUI VC GERA E RETORNA UM USERPROFILE COM OS DADOS OBTIDOS ACIMA
+        return Customer.builder()
+                .id(userId)
+                .fullName(userProfile.fullName())
+                .cpf(userProfile.cpf())
+                .phoneNumber(userProfile.phoneNumber())
+                .email(accountInfo.email())
+                .build();
 
-        return null;
     }
-
 }

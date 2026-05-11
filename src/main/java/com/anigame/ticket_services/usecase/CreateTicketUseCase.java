@@ -1,7 +1,7 @@
 package com.anigame.ticket_services.usecase;
 
-import com.anigame.ticket_services.domain.OrderEntity;
-import com.anigame.ticket_services.domain.enums.OrderStatusEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
+import com.anigame.ticket_services.domain.order.OrderStatusEntity;
 import com.anigame.ticket_services.repository.ticket.TicketRepository;
 import com.anigame.ticket_services.repository.ticket_batch_type.TicketBatchTypeRepository;
 import jakarta.transaction.Transactional;
@@ -31,8 +31,8 @@ public class CreateTicketUseCase {
         // 🚀 1. Gera TODOS os tickets (sem loop)
         ticketRepository.generateTicketsByOrder(order.getId());
 
-        // 🚀 2. Atualiza estoque (sem loop)
+       /* // 🚀 2. Atualiza estoque (sem loop) VERIFICAR SE ESSE MÉTODO ESTÁ DANDO BAIXA NO BANCO, OU SEJA, SE ELE ESTÁ REDUZINDO A QUANTIDADE DE INGRESSOS NOS INGRESSOS RESERVADOS E INCREMENTANDO NOS INGRESSOS VENDIDOS
         ticketBatchTypeRepository.updateStockByOrder(order.getId());
-
+*/ //essa lógica foi removida pois não deveria ficar aqui
     }
 }

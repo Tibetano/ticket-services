@@ -14,7 +14,8 @@ public class EventController {
 
     private final GetActiveBatchUseCase getActiveBatchUseCase;
 
-    @GetMapping("/{eventId}/batches/active")
+    //@GetMapping("/{eventId}/batches/active")
+    @GetMapping("/batches/active")
     public ResponseEntity<?> getActiveBatch () {
         return ResponseEntity.ok(getActiveBatchUseCase.execute());
     }

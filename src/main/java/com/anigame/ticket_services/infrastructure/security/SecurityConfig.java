@@ -42,9 +42,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST,"/u", "/v1/orders").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/u", "/v1/orders","/v1/webhook/charges"
+                                ,"/v1/webhook","/v1/webhook/pix").permitAll()
                         //.requestMatchers(HttpMethod.GET,"/v1/orders/ticket","/v1/orders/ticket-info").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/v1/users/me/tickets","/v1/events/{eventId}/batches/active").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/v1/events/batches/active").permitAll()
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Define a origem do CORS
                 .csrf(AbstractHttpConfigurer::disable) // Desabilita CSRF se for API REST

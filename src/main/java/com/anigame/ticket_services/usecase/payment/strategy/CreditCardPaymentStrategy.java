@@ -4,14 +4,17 @@ import com.anigame.ticket_services.domain.Customer;
 import com.anigame.ticket_services.domain.PaymentEntity;
 import com.anigame.ticket_services.domain.enums.PaymentMethodEnumEntity;
 import com.anigame.ticket_services.domain.enums.PaymentStatusEnumEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
 import com.anigame.ticket_services.infrastructure.payment.PaymentGateway;
+import com.anigame.ticket_services.repository.payment.PaymentRepository;
+import com.anigame.ticket_services.web.dto.request.PaymentRequestDTO;
 import com.anigame.ticket_services.web.dto.response.CreditCardPaymentResponse;
 import com.anigame.ticket_services.web.dto.response.OrderResponseDTO;
-import com.anigame.ticket_services.web.dto.request.PaymentRequestDTO;
-import com.anigame.ticket_services.repository.payment.PaymentRepository;
-import com.anigame.ticket_services.domain.OrderEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +22,8 @@ public class CreditCardPaymentStrategy implements PaymentStrategy {
 
     private final PaymentGateway gateway;
     private final PaymentRepository paymentRepository;
+    @Value("${efi.credit-card-fee-value}")
+    private BigDecimal creditCardFeeValue;
 
     @Override
     public PaymentMethodEnumEntity method() {
@@ -28,7 +33,10 @@ public class CreditCardPaymentStrategy implements PaymentStrategy {
     @Override
     public OrderResponseDTO process(Customer customer, OrderEntity order, PaymentRequestDTO payment) {
 
-        var response = gateway.chargeCard(customer, order, payment.creditCard());
+        //aplica a taxa do serviço do efí ao valor do pedido
+        order.applyPercentageFee(creditCardFeeValue);
+
+        var response = gateway.generateChargeCard(customer, order, payment.creditCard());
 
         PaymentEntity entity = PaymentEntity.creditCard(order, response.chargeId().toString(), PaymentStatusEnumEntity.PENDING);
 
@@ -39,9 +47,8 @@ public class CreditCardPaymentStrategy implements PaymentStrategy {
                 .status(entity.getStatus())
                 .build();
 
-
         return OrderResponseDTO.builder()
-                .orderId(order.getId())
+                .orderNumber(order.getOrderNumber())
                 .status(order.getStatus())
                 .payment(paymentResponse)
                 .build();

@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ticket-services
+  datasource:
+    url: jdbc:postgresql://localhost:5432/pg
+    username: postgres
+    password: postgres
+  sql:
+    init:
+      mode: always
+
+    jpa:
+      open-in-view: false #Evita queries fora da transação.
+    #hibernate:
+    #  ddl-auto: create-drop
+    #  ddl-auto: update
+    #show-sql: true
+    #defer-datasource-initialization: true
+    #properties:
+    #  hibernate:
+    #    format_sql: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          EventServicesClient:
+            url: http://event-services:8080
+          AuthenticationServicesClient:
+            url: http://authentication-services:8080
+
+app:
+  url: http://localhost
+  port: 8085
+  verify-email-endpoint: /auth/verify-user-account
+  new-password-endpoint: /auth/new-password
+
+jwt:
+  public:
+    key: classpath:app.pub
+  private:
+    key: classpath:app.key
+expire-times:
+  access-token: 3600           # 1 hour
+  refresh-token: 28800         # 8 hours
+  auth-validation-token: 900   # 15 minutes
+  new-password-token: 300      # 5 minutes
+
+topics:
+  register-user: "register-user.topic.v1"
+  send-email: "send-email.topic.v1"
+
+efi:
+  #client-id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
+  #client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
+  #certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
+  #sandbox: true
+  client-id: Client_Id_52f4c6f77449efd1bde73fa35d8b660a2c426df9
+  client-secret: Client_Secret_89de70b0bc913ff23d72e01dd25168467ebaa8cb
+  certificate-path: certs/producao-686823-ani-teste-cert.p12
+  sandbox: false
+  original-ticket-price: 3000 #valor em centavos OBS-IMPORTANTE: esse valor deve ser SEMPRE PAR pois se for impar o valor da meia entrada não será inteiro e dará problema de arredondamento !!!
+  pix-key: bf387dee-8e48-4e37-a539-dcaf82fa62bd #chave pix válida do efí
+  qr-code-expiration-time: 3600
+  charge-notification-url: https://api.webhookinbox.com/i/KYz2Wp5Z/in/
+
+
+

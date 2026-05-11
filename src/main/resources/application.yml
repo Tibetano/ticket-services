@@ -5,37 +5,40 @@ spring:
   application:
     name: ticket-services
   datasource:
-    url: jdbc:postgresql://localhost:5432/pg
-    username: postgres
-    password: postgres
+    #url:  jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
   sql:
     init:
       mode: always
-
-    jpa:
-      open-in-view: false #Evita queries fora da transação.
-    #hibernate:
-    #  ddl-auto: create-drop
-    #  ddl-auto: update
-    #show-sql: true
-    #defer-datasource-initialization: true
-    #properties:
-    #  hibernate:
-    #    format_sql: true
+  jpa:
+    open-in-view: false #Evita queries fora da transação.
+  #  properties:
+  #    hibernate:
+  #      default_schema: authentication_services
+  #      format_sql: true
+  #  show-sql: true
+  flyway:
+    enabled: true
+    schemas: ticket_services # O schema que esta aplicação irá gerenciar
+    locations: classpath:db/migration/authentication_services # Diretório de scripts específico
+    # flyway.table=flyway_schema_history_schema1 # Opcional: Para usar uma tabela de histórico única por schema
+    table: flyway_schema_history_authentication_services
   cloud:
     openfeign:
       client:
         config:
           EventServicesClient:
-            url: http://event-services:8080
+            url: ${EVENT_SERVICES_URL}
           AuthenticationServicesClient:
-            url: http://authentication-services:8080
+            url: ${AUTHENTICATION_SERVICES_URL}
 
 app:
-  url: http://localhost
-  port: 8085
-  verify-email-endpoint: /auth/verify-user-account
-  new-password-endpoint: /auth/new-password
+  url: ${FRONTEND_URL}
+  port: ${FRONTEND_PORT}
+  verify-email-endpoint: ${FRONTEND_VERIFY_ENDPOINT}
+  new-password-endpoint: ${FRONTEND_NEW_PASSWORD_ENDPOINT}
 
 jwt:
   public:
@@ -53,13 +56,24 @@ topics:
   send-email: "send-email.topic.v1"
 
 efi:
-  client-id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
-  client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
-  certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
-  sandbox: true
-  original-ticket-price: 3000 #valor em centavos OBS-IMPORTANTE: esse valor deve ser SEMPRE PAR pois se for impar o valor da meia entrada não será inteiro e dará problema de arredondamento !!!
-  pix-key: 71cdf9ba-c695-4e3c-b010-abb521a3f1be
+  #client-id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
+  #client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
+  #certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
+  #sandbox: true
+  client-id: Client_Id_52f4c6f77449efd1bde73fa35d8b660a2c426df9
+  client-secret: Client_Secret_89de70b0bc913ff23d72e01dd25168467ebaa8cb
+  certificate-path: certs/producao-686823-ani-teste-cert.p12
+  sandbox: false
+  original-ticket-price: 3000
+  pix-key: 6ed3f4f0-e132-4e36-8593-da28c736be9a
   qr-code-expiration-time: 3600
+  charge-notification-url: https://api.webhookinbox.com/i/KYz2Wp5Z/in/
+
+  credit-card-fee-type: PERCENTAGE #FIXED/PERCENTAGE
+  credit-card-fee-value: 3.49
+  pix-fee-type: PERCENTAGE #FIXED/PERCENTAGE
+  pix-fee-value: 1.19
 
 
-
+event:
+  ticket-limit-per-user: 3

@@ -2,6 +2,7 @@ package com.anigame.ticket_services.domain;
 
 import com.anigame.ticket_services.domain.enums.PaymentMethodEnumEntity;
 import com.anigame.ticket_services.domain.enums.PaymentStatusEnumEntity;
+import com.anigame.ticket_services.domain.order.OrderEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -26,8 +27,7 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "uuid DEFAULT gen_random_uuid()", updatable = false, nullable = false)
     private UUID id;
-    @Column(name = "order_id", nullable = false)
-    private UUID orderId;
+
     @Column(nullable = false)
     private String provider;
     @Enumerated(EnumType.STRING)
@@ -63,6 +63,12 @@ public class PaymentEntity {
     private LocalDateTime updatedAt;
 
 
+    @OneToOne
+    //@Column(name = "order_id", nullable = false)
+    @JoinColumn(name = "order_id", unique = true)
+    private OrderEntity orderEntity;
+
+
     public static PaymentEntity pix(OrderEntity order, String transactionId) {
 
         if (order == null) {
@@ -74,7 +80,7 @@ public class PaymentEntity {
         }
 
         return PaymentEntity.builder()
-                .orderId(order.getId())
+                .orderEntity(order)
                 .provider("Efí-Bank")
                 .method(PaymentMethodEnumEntity.PIX)
                 .providerChargeId("Not-used")
@@ -104,11 +110,11 @@ public class PaymentEntity {
         }
 
         return PaymentEntity.builder()
-                .orderId(order.getId())
+                .orderEntity(order)
                 .provider("Efí-Bank")
                 .method(PaymentMethodEnumEntity.CREDIT_CARD)
-                .providerChargeId("Not-used")
-                .providerTxId(chargeId)//verificar se esse nome de atributo é o real retornado
+                .providerChargeId(chargeId)
+                .providerTxId("Not-used")//verificar se esse nome de atributo é o real retornado
                 .providerStatus("lol")
                 .amount(order.getTotalAmount())
                 .status(initialStatus)
@@ -122,9 +128,21 @@ public class PaymentEntity {
                 .build();
     }
 
+    public void confirm () {
+        providerStatus = "paid";
+        status = PaymentStatusEnumEntity.APPROVED;
+        confirmedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        orderEntity.paid();
+    }
+
     /*public void paid() {
         this.status = PaymentStatus.APPROVED;
         this.paidAt = OffsetDateTime.now();
     }*/
+
+    public boolean isApproved () {
+        return PaymentStatusEnumEntity.APPROVED.equals(this.status);
+    }
 
 }

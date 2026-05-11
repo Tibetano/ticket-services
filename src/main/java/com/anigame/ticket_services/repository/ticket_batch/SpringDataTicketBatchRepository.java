@@ -9,8 +9,6 @@ import java.util.UUID;
 
 public interface SpringDataTicketBatchRepository extends JpaRepository<TicketBatchEntity, UUID> {
 
-    Optional<TicketBatchEntity> findById(UUID id); // normal
-
     @Query("""
     SELECT b FROM TicketBatchEntity b
     WHERE b.startAt <= CURRENT_TIMESTAMP

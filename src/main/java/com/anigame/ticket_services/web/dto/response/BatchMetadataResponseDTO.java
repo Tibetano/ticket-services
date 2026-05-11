@@ -1,6 +1,9 @@
 package com.anigame.ticket_services.web.dto.response;
 
+import java.util.UUID;
+
 public record BatchMetadataResponseDTO(
-        Integer number
+        UUID id,
+        String name
 ) {
 }

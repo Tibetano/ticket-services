@@ -10,9 +10,11 @@ public record BatchTicketResponseDTO(
         Integer price,
         @JsonProperty("total_quantity")
         Integer totalQuantity,
-        @JsonProperty("sold_quantity")
-        Integer soldQuantity,
-        @JsonProperty("reserved_quantity")
-        Integer reservedQuantity
+        //@JsonProperty("sold_quantity")
+        //Integer soldQuantity,
+        //@JsonProperty("reserved_quantity")
+        //Integer reservedQuantity
+        @JsonProperty("available_quantity")
+        Integer availableQuantity
 ) {
 }

@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -47,20 +48,36 @@ public class TicketBatchTypeEntity {
     @ToString.Exclude
     private TicketBatchEntity ticketBatchEntity;
 
+    @OneToMany(
+            mappedBy = "ticketBatchTypeEntity",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<OrderItemEntity> orderItemEntity;
+
+
+
     public void reserveTickets(Integer ticketQuantity) {
         if (soldQuantity + reservedQuantity + ticketQuantity > totalQuantity) {
-            throw new RuntimeException("The number of available " + ticketType.name() + " tickets is: " +
-                    (totalQuantity-(soldQuantity+reservedQuantity)));
+            throw new RuntimeException("The number of tickets listed for reservation is greater than the number of tickets available!");
         }
         reservedQuantity+=ticketQuantity;
     }
 
-    public void releaseTickets(Integer ticketQuantity) {
+    public void releaseReservedTickets(Integer ticketQuantity) {
         if (reservedQuantity < ticketQuantity) {
-            throw new RuntimeException("The number of tickets reserved (" + reservedQuantity +
-                    ") is less than the number stated (" + ticketQuantity + ")!");
+            throw new RuntimeException("The number of tickets listed for release is greater than the number of tickets available!");
         }
         reservedQuantity -= ticketQuantity;
+    }
+
+    public void confirmReservedTickets(Integer ticketQuantity) {
+        if (reservedQuantity < ticketQuantity) {
+            throw new RuntimeException("The number of tickets requested for confirmation is greater than the number of tickets available!");
+        }
+        reservedQuantity -= ticketQuantity;
+        soldQuantity += ticketQuantity;
     }
 
 }

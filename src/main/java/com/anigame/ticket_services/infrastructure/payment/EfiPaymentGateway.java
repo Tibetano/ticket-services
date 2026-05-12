@@ -33,7 +33,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EfiPaymentGateway implements PaymentGateway {
 
-    private final EfiPay efiPay;
     private final EfiProperties props;
     private final ObjectMapper objectMapper;
 
@@ -50,6 +49,8 @@ public class EfiPaymentGateway implements PaymentGateway {
         // chamada API Efí
 
         try {
+            EfiPay efiPay = new EfiPay(props.getGatewayProps());
+
             JSONObject pixChargeInfo = efiPay.call(
                     "pixCreateImmediateCharge",
                     Map.of(),
@@ -83,15 +84,17 @@ public class EfiPaymentGateway implements PaymentGateway {
     public PixQRCodeResponse generatePixQRCode(String locId) {
 
         try{
-        JSONObject pixChargeQRCode = efiPay.call(
-                "pixGenerateQRCode",
-                new HashMap<>(Map.of("id",locId)),
-                new JSONObject());
+            EfiPay efiPay = new EfiPay(props.getGatewayProps());
 
-        return new PixQRCodeResponse(
-                pixChargeQRCode.getString("imagemQrcode"),
-                pixChargeQRCode.getString("qrcode"),
-                pixChargeQRCode.getString("linkVisualizacao")
+            JSONObject pixChargeQRCode = efiPay.call(
+                    "pixGenerateQRCode",
+                    new HashMap<>(Map.of("id",locId)),
+                    new JSONObject());
+
+            return new PixQRCodeResponse(
+                    pixChargeQRCode.getString("imagemQrcode"),
+                    pixChargeQRCode.getString("qrcode"),
+                    pixChargeQRCode.getString("linkVisualizacao")
         );
         } catch(EfiPayException e) {
             log.error("Erro EFI PIX code={}, error={}", e.getCode(), e.getError(), e);
@@ -115,6 +118,8 @@ public class EfiPaymentGateway implements PaymentGateway {
         var OrderItemList = order.getItems();
 
         try {
+            EfiPay efiPay = new EfiPay(props.getGatewayProps());
+
             //gerar itens da cobrança
            List<OrderItem> itemList = OrderItemList.stream()
                     .map(i->{
@@ -183,6 +188,8 @@ public class EfiPaymentGateway implements PaymentGateway {
         params.put("token", notificationToken);
 
         try {
+            EfiPay efiPay = new EfiPay(props.getGatewayProps());
+
             JSONObject response = efiPay.call("getNotification", params, new JSONObject());
             EfíTransactionStatusResponseDTO res = objectMapper.readValue(response.toString(), EfíTransactionStatusResponseDTO.class);
             //O objeto retornado pelo efí trás o histírico de mudança de status da cobrança mas na linha abaixo está sendo retornada apenas a última mudança de status.

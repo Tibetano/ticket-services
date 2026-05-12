@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST,"/u", "/v1/orders","/v1/webhook/charges"
+                        .requestMatchers(HttpMethod.POST, "/v1/orders","/v1/webhook/charges"
                                 ,"/v1/webhook","/v1/webhook/pix").permitAll()
                         //.requestMatchers(HttpMethod.GET,"/v1/orders/ticket","/v1/orders/ticket-info").permitAll()
                         .requestMatchers(HttpMethod.GET,"/v1/events/batches/active").permitAll()

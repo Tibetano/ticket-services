@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient("AuthenticationServicesClient")
 public interface AuthServicesFeignClient {
 
-    @GetMapping("/auth/info")
+    @GetMapping("/v1/auth/info")
     AccountInfoDTO getAccountInfo (@RequestHeader("Authorization") String authorizationHeader);
 
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient("EventServicesClient")
 public interface EventServicesFeignClient {
 
-    @GetMapping("/user/profile")
+    @GetMapping("/v1/user/profile")
     UserProfileDTO getUserProfile (@RequestHeader("Authorization") String authorizationHeader);
 
 }

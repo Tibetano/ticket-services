@@ -17,4 +17,14 @@ public record DataDTO (
         Integer value
 ) {
 
+        public record StatusDTO (
+                String current,
+                String previous
+        ) {}
+
+        public record IdentifiersDTO (
+                @JsonProperty("charge_id")
+                Long chargeId
+        ) {}
+
 }

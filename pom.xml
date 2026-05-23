@@ -95,15 +95,16 @@
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
 
-
-
-
-		<!-- DEPENDÊNCIA DO EFÍ QUE DEVE SER REESCRITA PARA EVITAR FALHA DE SEGURANÇA -->
 		<dependency>
-			<groupId>br.com.efipay.efisdk</groupId>
-			<artifactId>sdk-java-apis-efi</artifactId>
-			<version>1.2.5</version>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-hc5</artifactId>
+		</dependency>
+
 
 	</dependencies>
 

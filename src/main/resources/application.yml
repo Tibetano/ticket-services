@@ -56,13 +56,12 @@ topics:
   send-email: "send-email.topic.v1"
 
 efi:
-  #client-id: Client_Id_4d5a212bae6ba3534c9c60fc1004233494d343d6
-  #client-secret: Client_Secret_578f36b9cee8b6c8aaade1789449349b1c1bda12
-  #certificate-path: certs/homologacao-686823-ani-teste-cert-hom.p12
-  #sandbox: true
+  pix-base-url: https://pix.api.efipay.com.br
+  credit-card-base-url: https://cobrancas.api.efipay.com.br
   client-id: Client_Id_52f4c6f77449efd1bde73fa35d8b660a2c426df9
   client-secret: Client_Secret_89de70b0bc913ff23d72e01dd25168467ebaa8cb
   certificate-path: certs/producao-686823-ani-teste-cert.p12
+  certificate-password:
   sandbox: false
   original-ticket-price: 3000
   pix-key: 6ed3f4f0-e132-4e36-8593-da28c736be9a
@@ -77,3 +76,7 @@ efi:
 
 event:
   ticket-limit-per-user: 3
+
+#logging: #essa configuração de log serve pra mostrar os logs de debug do feignclient no console
+#  level:
+#    feign: DEBUG

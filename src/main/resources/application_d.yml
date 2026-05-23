@@ -67,4 +67,5 @@ efi:
   charge-notification-url: https://api.webhookinbox.com/i/KYz2Wp5Z/in/
 
 
-
+event:
+  ticket-limit-per-user: 3

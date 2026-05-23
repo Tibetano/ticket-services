@@ -31,7 +31,7 @@ public class OrderRepository {
     }
 
     public OrderEntity save(OrderEntity order) {
-        System.out.println(order.getItems());
+        //System.out.println(order.getItems());
         //OrderEntity newOrder = jpaRepo.save(order);
         OrderEntity newOrder = jpaRepo.saveAndFlush(order);
         entityManager.refresh(newOrder);// a chamada do refresh foi adicionada pois o objeto retornado pelo banco dpois do save não está retornando o valor "oerderNUmber" que é gerado automaicamente pelo banco, isso não acontece em versões mais atuais do postgres, entretanto a que está sendo utilizada no momento não faz isso automaticamente. verifique se a versão do postgres é mais atual e se for remova esse entitymanager....

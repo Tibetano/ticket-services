@@ -38,12 +38,12 @@ public class PixPaymentStrategy implements PaymentStrategy {
 
         var response = gateway.generatePix(customer, order);
 
-        PaymentEntity entity = PaymentEntity.pix(order, response.txId());
+        PaymentEntity entity = PaymentEntity.pix(order, response.getTxid());
 
         paymentRepository.save(entity);
 
         //gerar o pix qr-code aqui e retornar
-        var pixQRCode = gateway.generatePixQRCode(response.locId());
+        var pixQRCode = gateway.generatePixQRCode(response.getLoc().getId());
 
         //juntar esse dto abaixo com o dto acima
         var paymentResponse = PixPaymentResponse.builder()
@@ -64,11 +64,5 @@ public class PixPaymentStrategy implements PaymentStrategy {
                 .payment(paymentResponse)
                 .build();
     }
-
-
-
-
-
-
 
 }

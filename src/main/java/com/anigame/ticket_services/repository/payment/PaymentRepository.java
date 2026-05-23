@@ -15,14 +15,14 @@ public class PaymentRepository {
     }
 
     public PaymentEntity findByProviderChargeId (String providerChargeId){
-        System.out.println(providerChargeId);
+        //System.out.println(providerChargeId);
         return jpaRepo.findByProviderChargeId(providerChargeId).orElseThrow(
                 () -> new RuntimeException("Payment not found.")
         );
     }
 
     public PaymentEntity findByProviderTxId (String providerTxId){
-        System.out.println(providerTxId);
+        //System.out.println(providerTxId);
         return jpaRepo.findByProviderTxId(providerTxId).orElseThrow(
                 () -> new RuntimeException("Payment not found.")
         );

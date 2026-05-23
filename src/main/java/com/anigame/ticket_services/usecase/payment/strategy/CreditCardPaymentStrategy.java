@@ -38,7 +38,7 @@ public class CreditCardPaymentStrategy implements PaymentStrategy {
 
         var response = gateway.generateChargeCard(customer, order, payment.creditCard());
 
-        PaymentEntity entity = PaymentEntity.creditCard(order, response.chargeId().toString(), PaymentStatusEnumEntity.PENDING);
+        PaymentEntity entity = PaymentEntity.creditCard(order, response.data().chargeId().toString(), PaymentStatusEnumEntity.PENDING);
 
         paymentRepository.save(entity);
 

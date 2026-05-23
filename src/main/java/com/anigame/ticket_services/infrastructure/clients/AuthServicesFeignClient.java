@@ -11,8 +11,4 @@ public interface AuthServicesFeignClient {
     @GetMapping("/v1/auth/info")
     AccountInfoDTO getAccountInfo (@RequestHeader("Authorization") String authorizationHeader);
 
-
-    //IMPLEMENTAR AQUI TODAS AS REQUISIÇÕES DA SDK DO EFÍ QUE SERÃO UTILIZADAS AQUI
-
-
 }

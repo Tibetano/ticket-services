@@ -66,7 +66,7 @@ efi:
   original-ticket-price: 3000
   pix-key: 6ed3f4f0-e132-4e36-8593-da28c736be9a
   qr-code-expiration-time: 3600
-  charge-notification-url: https://api.webhookinbox.com/i/KYz2Wp5Z/in/
+  charge-notification-url: https://www.anigame.com.br/v1/webhook/charges
 
   credit-card-fee-type: PERCENTAGE #FIXED/PERCENTAGE
   credit-card-fee-value: 3.49

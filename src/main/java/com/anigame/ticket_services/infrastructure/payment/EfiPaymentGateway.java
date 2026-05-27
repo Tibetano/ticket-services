@@ -10,17 +10,18 @@ import com.anigame.ticket_services.infrastructure.clients.dto.PixChargeResponse;
 import com.anigame.ticket_services.infrastructure.config.EfiProperties;
 import com.anigame.ticket_services.infrastructure.payment.dto.CardResponse;
 import com.anigame.ticket_services.infrastructure.payment.dto.OrderItem;
-import com.anigame.ticket_services.infrastructure.payment.dto.PixQRCodeResponse;
 import com.anigame.ticket_services.infrastructure.payment.dto.creditcard.CreditCardPaymentRequest;
 import com.anigame.ticket_services.shared.exception.exceptions.BaaIntegrationException;
 import com.anigame.ticket_services.usecase.webhook.dto.charge.DataDTO;
 import com.anigame.ticket_services.usecase.webhook.dto.charge.EfiTransactionStatusResponseDTO;
 import com.anigame.ticket_services.web.dto.CreditCardDTO;
+import com.anigame.ticket_services.web.dto.response.PixPaymentDetailsResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public class EfiPaymentGateway implements PaymentGateway {
     private final EfiPayClient creditCardClient;
 
     @Override
-    public PixChargeResponse generatePix(Customer customer, OrderEntity order) {
+    public PixChargeResponse generatePix(Customer customer, OrderEntity order, BigDecimal percentage) {
 
         try {
             PixChargeRequest request =
@@ -56,7 +57,17 @@ public class EfiPaymentGateway implements PaymentGateway {
             PixChargeRequest.Valor valor =
                     new PixChargeRequest.Valor();
 
-            valor.setOriginal(BigDecimal.valueOf(order.getTotalAmount()).scaleByPowerOfTen(-2).toPlainString());
+
+            BigDecimal fee = BigDecimal.valueOf(order.getTotalAmount())
+                    .multiply(percentage)
+                    .divide(BigDecimal.valueOf(100),10, RoundingMode.HALF_UP);
+            String taxedUnitPrice = BigDecimal.valueOf(order.getTotalAmount())
+                    .add(fee)
+                    .setScale(0, RoundingMode.HALF_UP)
+                    .toPlainString();
+
+            valor.setOriginal(taxedUnitPrice);
+            //valor.setOriginal(BigDecimal.valueOf(order.getTotalAmount()).scaleByPowerOfTen(-2).toPlainString());
 
             request.setCalendario(calendario);
             request.setDevedor(devedor);
@@ -84,10 +95,10 @@ public class EfiPaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public PixQRCodeResponse generatePixQRCode(Long locId) {
+    public PixPaymentDetailsResponse generatePixQRCode(Long locId) {
         try{
             EfiPixQRCodeResponse response = pixClient.generateChargeQRCode(locId);
-            return new PixQRCodeResponse(
+            return new PixPaymentDetailsResponse(
                     response.qrCodeImage(),
                     response.qrCode(),
                     response.visualizationLink()
@@ -99,19 +110,26 @@ public class EfiPaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public CardResponse generateChargeCard(Customer customer, OrderEntity order, CreditCardDTO card) {
-
-        var OrderItemList = order.getItems();
+    public CardResponse generateChargeCard(Customer customer, OrderEntity order, CreditCardDTO card, BigDecimal percentage) {
 
         try {
             //gerar itens da cobrança
-           List<OrderItem> itemList = OrderItemList.stream()
+            List<OrderItem> itemList = order.getItems().stream()
                     .map(i->{
+                        //gerar a taxa sobre o preço unitário e somar essa taxa ao valor antes de chamar o efí
+                        BigDecimal fee = BigDecimal.valueOf(i.getUnitPrice())
+                                .multiply(percentage)
+                                .divide(BigDecimal.valueOf(100),10, RoundingMode.HALF_UP);
+                        Integer taxedUnitPrice = BigDecimal.valueOf(i.getUnitPrice())
+                                .add(fee)
+                                .setScale(0, RoundingMode.HALF_UP)
+                                .intValue();
+
                         return OrderItem.builder()
                                 .id(i.getId())
                                 //.type(ItemType.the_logic_for_this_is_not_implemented)//aqui deve ser o tipo do ingresso (FULL,HALF,SOLIDARITY)
                                 .type(i.getTicketBatchTypeEntity().getTicketType())//aqui deve ser o tipo do ingresso (FULL,HALF,SOLIDARITY)
-                                .unitPrice(i.getUnitPrice())
+                                .unitPrice(taxedUnitPrice)
                                 .quantity(i.getQuantity())
                                 .build();
                     }).toList();

@@ -1,13 +1,19 @@
 package com.anigame.ticket_services.domain;
 
+import com.anigame.ticket_services.domain.enums.FeePayerType;
+import com.anigame.ticket_services.domain.enums.FeeType;
 import com.anigame.ticket_services.domain.enums.PaymentMethodEnumEntity;
 import com.anigame.ticket_services.domain.enums.PaymentStatusEnumEntity;
 import com.anigame.ticket_services.domain.order.OrderEntity;
+import com.anigame.ticket_services.infrastructure.clients.dto.PixChargeResponse;
+import com.anigame.ticket_services.infrastructure.payment.dto.CardResponse;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -40,8 +46,25 @@ public class PaymentEntity {
     private String providerTxId;
     @Column(name = "provider_status")
     private String providerStatus;
+
+
+
     @Column(nullable = false)
     private Integer amount;
+
+    @Column(name = "provider_fee_fixed")
+    private Integer providerFeeFixed;
+    @Column(name = "provider_fee_percentage", precision = 5, scale = 2)
+    private BigDecimal providerFeePercentage;
+    @Column(name = "provider_fee_amount")
+    private Integer providerFeeAmount;
+    @Column(name = "net_amount")
+    private Integer netAmount;
+    @Column(name = "fee_payer")
+    private FeePayerType feePayer;
+
+
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false)
@@ -69,28 +92,53 @@ public class PaymentEntity {
     private OrderEntity orderEntity;
 
 
-    public static PaymentEntity pix(OrderEntity order, String transactionId) {
+    public static PaymentEntity pix(
+            OrderEntity order,
+            PixChargeResponse pixChargeResponse,
+            FeeType feeType,
+            BigDecimal pixFeeValue,
+            String rawResponse
+    ) {
 
         if (order == null) {
             throw new IllegalArgumentException("Order cannot be null");
         }
 
-        if (transactionId == null || transactionId.isBlank()) {
+        if (pixChargeResponse.getTxid() == null || pixChargeResponse.getTxid().isBlank()) {
             throw new IllegalArgumentException("TransactionId cannot be null");
         }
+
+        Integer totalAmount = new BigDecimal(pixChargeResponse.getAmount().getOriginalAmount()).multiply(BigDecimal.valueOf(100)).intValue();
+        Integer providerFeeAmount = BigDecimal.valueOf(totalAmount)
+                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
 
         return PaymentEntity.builder()
                 .orderEntity(order)
                 .provider("Efí-Bank")
                 .method(PaymentMethodEnumEntity.PIX)
                 .providerChargeId("Not-used")
-                .providerTxId(transactionId)//verificar se esse nome de atributo é o real retornado
-                .providerStatus("lol")
-                .amount(order.getTotalAmount())
+                .providerTxId(pixChargeResponse.getTxid())
+                .providerStatus(pixChargeResponse.getStatus())
+
+
+
+                .amount(totalAmount)
+
+                .providerFeeFixed(feeType.equals(FeeType.FIXED) ? pixFeeValue.intValue() : 0)
+                .providerFeePercentage(feeType.equals(FeeType.PERCENTAGE) ? pixFeeValue : new BigDecimal(0))
+                .providerFeeAmount(providerFeeAmount)
+                .netAmount(totalAmount - providerFeeAmount)
+                .feePayer(FeePayerType.MERCHANT)
+
+
+
+
                 .status(PaymentStatusEnumEntity.PENDING)
                 .idempotencyKey(UUID.randomUUID().toString())//gerar a lógica da idenpotence key
-                .failureReason("lol")
-                .rawResponse("{\"message\":\"lol\"}")
+                .failureReason("Not-implemented")
+                .rawResponse(rawResponse)
                 .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .confirmedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
@@ -99,28 +147,50 @@ public class PaymentEntity {
 
     }
 
-    public static PaymentEntity creditCard(OrderEntity order, String chargeId, PaymentStatusEnumEntity initialStatus) {
+    public static PaymentEntity creditCard(
+            OrderEntity order,
+            CardResponse cardResponse,
+            PaymentStatusEnumEntity initialStatus,
+            FeeType feeType,
+            BigDecimal creditCardFeeValue,
+            String rawResponse
+    ) {
 
         if (order == null) {
             throw new IllegalArgumentException("Order cannot be null");
         }
 
-        if (chargeId == null || chargeId.isBlank()) {
+        if (cardResponse.data().chargeId() == null || cardResponse.data().chargeId().toString().isBlank()) {
             throw new IllegalArgumentException("TransactionId cannot be null");
         }
+
+        int providerFeeAmount = BigDecimal.valueOf(cardResponse.data().total())
+                .multiply(creditCardFeeValue)
+                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP)
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
 
         return PaymentEntity.builder()
                 .orderEntity(order)
                 .provider("Efí-Bank")
                 .method(PaymentMethodEnumEntity.CREDIT_CARD)
-                .providerChargeId(chargeId)
-                .providerTxId("Not-used")//verificar se esse nome de atributo é o real retornado
-                .providerStatus("lol")
-                .amount(order.getTotalAmount())
+                .providerChargeId(cardResponse.data().chargeId().toString())
+                .providerTxId("Not-used")
+                .providerStatus(cardResponse.data().status())
+
+
+                .amount(cardResponse.data().total())
+                .providerFeeFixed(feeType.equals(FeeType.FIXED) ? creditCardFeeValue.intValue() : 0)
+                .providerFeePercentage(feeType.equals(FeeType.PERCENTAGE) ? creditCardFeeValue : new BigDecimal(0))
+                .providerFeeAmount(providerFeeAmount)
+                .netAmount(cardResponse.data().total() - providerFeeAmount)
+                .feePayer(FeePayerType.MERCHANT)
+
+
                 .status(initialStatus)
                 .idempotencyKey(UUID.randomUUID().toString())//gerar a lógica da idenpotence key
-                .failureReason("lol")
-                .rawResponse("{\"message\":\"lol\"}")
+                .failureReason("Not-implemented")
+                .rawResponse(rawResponse)
                 .expiresAt(LocalDateTime.now().plusMinutes(10))
                 .confirmedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())

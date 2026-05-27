@@ -7,8 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,16 +98,19 @@ public class OrderEntity {
         this.items.add(item);
     }
 
-    public void applyPercentageFee(BigDecimal percentage) {
+    /*public void applyPercentageFee(BigDecimal percentage) {
+        if (paymentEntity.getMethod().equals(PaymentMethodEnumEntity.PIX)){
+            BigDecimal fee = BigDecimal.valueOf(this.totalAmount)
+                    .multiply(percentage)
+                    .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
 
-        BigDecimal fee = BigDecimal.valueOf(this.totalAmount)
-                .multiply(percentage)
-                .divide(BigDecimal.valueOf(100), 10, RoundingMode.HALF_UP);
-
-        this.totalAmount = BigDecimal.valueOf(this.totalAmount)
-                .add(fee)
-                .setScale(0, RoundingMode.HALF_UP)
-                .intValue();
-    }
+            this.totalAmount = BigDecimal.valueOf(this.totalAmount)
+                    .add(fee)
+                    .setScale(0, RoundingMode.HALF_UP)
+                    .intValue();
+        } else if (paymentEntity.getMethod().equals(PaymentMethodEnumEntity.CREDIT_CARD)) {
+            
+        }
+    }*/
 
 }

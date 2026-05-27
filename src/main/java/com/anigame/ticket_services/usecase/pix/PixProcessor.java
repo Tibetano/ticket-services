@@ -20,6 +20,13 @@ public class PixProcessor {
     @Transactional
     public void process (PixWebhookDTO dto) {
 
+        if (dto.transactions().isEmpty()) {
+            System.out.println("-------------Webhook id empty-------------");
+            System.out.println(dto);
+            System.out.println("------------------------------------------");
+            return;
+        }
+
         //buscar o payment referente ao pedido/pagamento
         var payment = paymentRepository.findByProviderTxId(dto.transactions().getFirst().transactionId());
 

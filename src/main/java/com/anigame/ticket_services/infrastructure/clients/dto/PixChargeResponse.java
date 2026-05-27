@@ -1,5 +1,6 @@
 package com.anigame.ticket_services.infrastructure.clients.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -13,10 +14,20 @@ public class PixChargeResponse {
 
     private String status;
 
-    private String pixCopiaECola;
+    @JsonProperty("pixCopiaECola")
+    private String pixCopyAndPaste;
+
+    @JsonProperty("valor")
+    private Amount amount;
 
     @Data
     public static class LocationInfo {
         private Long id;
+    }
+
+    @Data
+    public static class Amount {
+        @JsonProperty("original")
+        private String originalAmount;
     }
 }

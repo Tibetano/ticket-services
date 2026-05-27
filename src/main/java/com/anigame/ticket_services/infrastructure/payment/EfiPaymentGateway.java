@@ -64,6 +64,7 @@ public class EfiPaymentGateway implements PaymentGateway {
             String taxedUnitPrice = BigDecimal.valueOf(order.getTotalAmount())
                     .add(fee)
                     .setScale(0, RoundingMode.HALF_UP)
+                    .scaleByPowerOfTen(-2)
                     .toPlainString();
 
             valor.setOriginal(taxedUnitPrice);

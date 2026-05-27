@@ -60,6 +60,8 @@ public class PaymentEntity {
     private Integer providerFeeAmount;
     @Column(name = "net_amount")
     private Integer netAmount;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "fee_payer")
     private FeePayerType feePayer;
 

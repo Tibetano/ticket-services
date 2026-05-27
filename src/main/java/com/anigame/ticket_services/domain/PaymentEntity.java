@@ -58,8 +58,11 @@ public class PaymentEntity {
     private BigDecimal providerFeePercentage;
     @Column(name = "provider_fee_amount")
     private Integer providerFeeAmount;
-    @Column(name = "net_amount")
+
+
+    @Column(name = "net_amount", insertable = false, updatable = false)
     private Integer netAmount;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "fee_payer")
@@ -131,7 +134,7 @@ public class PaymentEntity {
                 .providerFeeFixed(feeType.equals(FeeType.FIXED) ? pixFeeValue.intValue() : 0)
                 .providerFeePercentage(feeType.equals(FeeType.PERCENTAGE) ? pixFeeValue : new BigDecimal(0))
                 .providerFeeAmount(providerFeeAmount)
-                .netAmount(totalAmount - providerFeeAmount)
+
                 .feePayer(FeePayerType.MERCHANT)
 
 
@@ -185,7 +188,7 @@ public class PaymentEntity {
                 .providerFeeFixed(feeType.equals(FeeType.FIXED) ? creditCardFeeValue.intValue() : 0)
                 .providerFeePercentage(feeType.equals(FeeType.PERCENTAGE) ? creditCardFeeValue : new BigDecimal(0))
                 .providerFeeAmount(providerFeeAmount)
-                .netAmount(cardResponse.data().total() - providerFeeAmount)
+
                 .feePayer(FeePayerType.MERCHANT)
 
 

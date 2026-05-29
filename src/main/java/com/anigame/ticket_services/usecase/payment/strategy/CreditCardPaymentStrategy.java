@@ -39,23 +39,21 @@ public class CreditCardPaymentStrategy implements PaymentStrategy {
 
         var response = gateway.generateChargeCard(customer, order, payment.creditCard(), creditCardFeeValue);
 
-        String rawResponse;
+        PaymentEntity entity = PaymentEntity.creditCard(
+                order,
+                response,
+                PaymentStatusEnumEntity.APPROVED,
+                FeeType.PERCENTAGE,
+                creditCardFeeValue,
+                "" //passando strign vazia pois é melhor que passar null e esse atributo é setado logo abaixo
+        );
 
         try {
-            rawResponse = objectMapper.writeValueAsString(response);
+            entity.setRawResponse(objectMapper.writeValueAsString(response));
         } catch (JsonProcessingException e) {
             System.out.println("DEU ERRO NA CONVERSÃO DO CARDRESPONSE PARA STRING NO ARQUIVO package com.anigame.ticket_services.usecase.payment.strategy; na CreditCardPaymentStrategy");
             throw new RuntimeException(e);
         }
-
-        PaymentEntity entity = PaymentEntity.creditCard(
-                order,
-                response,
-                PaymentStatusEnumEntity.PENDING,
-                FeeType.PERCENTAGE,
-                creditCardFeeValue,
-                rawResponse
-        );
 
         paymentRepository.save(entity);
 

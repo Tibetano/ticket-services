@@ -1,44 +1,43 @@
-package com.anigame.ticket_services.usecase.pix;
+package com.anigame.ticket_services.usecase.charge.strategy;
 
 import com.anigame.ticket_services.repository.payment.PaymentRepository;
 import com.anigame.ticket_services.usecase.CreateTicketUseCase;
-import com.anigame.ticket_services.usecase.webhook.dto.pix.PixWebhookDTO;
+import com.anigame.ticket_services.usecase.webhook.dto.charge.DataDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class PixProcessor {
+public class ApprovedHandler implements ChargeStatusHandler{
 
     private final PaymentRepository paymentRepository;
     private final CreateTicketUseCase createTicketUseCase;
     private final ObjectMapper objectMapper;
 
+    @Override
     @Transactional
-    public void process (PixWebhookDTO dto) {
+    public String supports() {
+        return "approved";
+    }
 
-        if (dto.transactions().isEmpty()) {
-            System.out.println("-------------Webhook id empty-------------");
-            System.out.println(dto);
-            System.out.println("------------------------------------------");
-            return;
-        }
+    @Override
+    public void handle(DataDTO dto) {
 
-        //buscar o payment referente ao pedido/pagamento
-        var payment = paymentRepository.findByProviderTxId(dto.transactions().getFirst().transactionId());
+        var payment = paymentRepository.findByProviderChargeId(dto.identifiers().chargeId().toString());
 
         //verificar se a cobrança já foi tratada para evitar a geração de ingressos duplicados/mais ingressos, no caso, ingressos inválidos
-        if (payment.isPaid()) {
-            throw new RuntimeException("Charge already processed.");
+        if (!payment.isApproved()) {
+            throw new RuntimeException("The charge already processed or not approved yet.");
         }
-        //atualizar status do registro na tabela pedido
-        payment.paidByPix();
+        //atualizar status do registro na tabela payment
+        payment.confirm();
 
         /*
             O OBJETO COMPLETO DA NOTIFICAÇÃO DE PAGAMENTO DEVE SER SALVO COMO STRING NO ATRIBUTO "rawResponse" DA ENTIDADE DE PAYMENT!!!
+            REPARE QUE ATUALMENTE O OBJETO DE NOTIFICAÇÃO NESSE PONTO DO FLUXO ESTÁ TRAZENDO APENAS UMA PARTE DA ENTIDADE ORIGINAL RETORNADA PELO EFÍ.
         */
         try {
             payment.setRawResponse(objectMapper.writeValueAsString(dto));
@@ -48,6 +47,5 @@ public class PixProcessor {
 
         //criar ingresso
         createTicketUseCase.execute(payment.getOrderEntity());
-
     }
 }

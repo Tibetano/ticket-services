@@ -204,20 +204,50 @@ public class PaymentEntity {
     }
 
     public void confirm () {
-        providerStatus = "paid";
-        status = PaymentStatusEnumEntity.APPROVED;
+        providerStatus = "CONFIRMED";
+        status = PaymentStatusEnumEntity.CONFIRMED;
         confirmedAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        orderEntity.paid();
+        orderEntity.confirmReservedTickets();
     }
 
-    /*public void paid() {
-        this.status = PaymentStatus.APPROVED;
-        this.paidAt = OffsetDateTime.now();
-    }*/
+    public void paid() {
+        orderEntity.paid();
+        this.status = PaymentStatusEnumEntity.PAID;
+        providerStatus = "PAID";
+        updatedAt = LocalDateTime.now();
+    }
+
+    public void paidByPix() {
+        orderEntity.paidByPix();
+        this.status = PaymentStatusEnumEntity.PAID;
+        providerStatus = "PAID";
+        updatedAt = LocalDateTime.now();
+    }
+
+    public void contest() {
+        this.status = PaymentStatusEnumEntity.CONTESTED;
+        updatedAt = LocalDateTime.now();
+    }
 
     public boolean isApproved () {
         return PaymentStatusEnumEntity.APPROVED.equals(this.status);
+    }
+
+    public boolean isPaid () {
+        return PaymentStatusEnumEntity.PAID.equals(this.status);
+    }
+
+    public boolean isConfirmed () {
+        return PaymentStatusEnumEntity.CONFIRMED.equals(this.status);
+    }
+
+    public boolean isContested () {
+        return PaymentStatusEnumEntity.CONTESTED.equals(this.status);
+    }
+
+    public boolean isPending () {
+        return PaymentStatusEnumEntity.PENDING.equals(this.status);
     }
 
 }

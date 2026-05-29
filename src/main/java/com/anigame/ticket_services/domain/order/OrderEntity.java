@@ -80,9 +80,16 @@ public class OrderEntity {
 
     public void paid() {
         this.status = OrderStatusEntity.PAID;
+    }
+
+    public void paidByPix() {
+        this.confirmReservedTickets();
+        this.status = OrderStatusEntity.PAID;
+    }
+
+    public void confirmReservedTickets () {
         //chama o método "dar baixa" dos order entity que chamam o método confirm reserved tickets da entidade ticketbatchtypeentity
         this.items.forEach(OrderItemEntity::confirmReservedTickets);
-
     }
 
     public void expire() {

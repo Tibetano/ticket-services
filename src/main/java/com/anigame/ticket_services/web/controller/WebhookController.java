@@ -6,10 +6,7 @@ import com.anigame.ticket_services.usecase.webhook.dto.pix.PixWebhookDTO;
 import com.anigame.ticket_services.web.dto.request.ChargeWebhookRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/webhook")
@@ -20,7 +17,7 @@ public class WebhookController {
     private final PixWebhookUseCase pixWebhookUseCase;
 
     @PostMapping("/charges")
-    public ResponseEntity<?> webhookCharge (@RequestBody ChargeWebhookRequestDTO chargeWebhook) {
+    public ResponseEntity<?> webhookCharge (@RequestParam("notification") ChargeWebhookRequestDTO chargeWebhook) {
         chargesWebhookUseCase.execute(chargeWebhook.notificationToken());
         return ResponseEntity.ok("{\"status\": 200}");
     }

@@ -18,7 +18,17 @@ public class WebhookController {
 
     @PostMapping("/charges")
     public ResponseEntity<?> webhookCharge (@RequestParam("notification") ChargeWebhookRequestDTO chargeWebhook) {
+
+
+        System.out.println("======BEGIN===========token: " + chargeWebhook.notificationToken()+"=================");
+
+
         chargesWebhookUseCase.execute(chargeWebhook.notificationToken());
+
+
+        System.out.println("======END================================");
+
+
         return ResponseEntity.ok("{\"status\": 200}");
     }
 

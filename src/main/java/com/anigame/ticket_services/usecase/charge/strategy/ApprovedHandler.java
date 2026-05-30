@@ -26,7 +26,11 @@ public class ApprovedHandler implements ChargeStatusHandler{
     @Override
     public void handle(DataDTO dto) {
 
+        System.out.println("Entrou no tratador do approved.");
+
         var payment = paymentRepository.findByProviderChargeId(dto.identifiers().chargeId().toString());
+
+        System.out.println("PaymentStatus: " + payment.getStatus());
 
         //verificar se a cobrança já foi tratada para evitar a geração de ingressos duplicados/mais ingressos, no caso, ingressos inválidos
         if (!payment.isApproved()) {

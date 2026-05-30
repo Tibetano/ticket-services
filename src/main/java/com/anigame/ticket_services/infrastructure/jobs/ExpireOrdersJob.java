@@ -19,7 +19,7 @@ public class ExpireOrdersJob {
 
     @Scheduled(fixedDelay = 60000)
     public void run() {
-        log.info("Running expire orders job");
+        //log.info("Running expire orders job");
         expireOrdersUseCase.execute();
     }
 }

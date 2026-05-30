@@ -17,6 +17,16 @@ public class ChargesWebhookUseCase {
 
         DataDTO latestStatus = paymentGateway.getPaymentStatus(notificationToken);
 
+        System.out.println(
+                "last status:" +
+                "\n{" +
+                "\nnotificationToken: " + notificationToken +
+                "\ncorrentStatus: " +
+                latestStatus.status().current() +
+                "\npreviusStatus: " + latestStatus.status().previous() +
+                "\n}"
+        );
+
         /*var mockStatus = new DataDTO(
                 "No-reason",
                 new IdentifiersDTO(999142145L),
